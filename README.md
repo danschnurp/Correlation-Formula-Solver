@@ -1,1 +1,16 @@
 # kiv-ppr
+- Cílem práce je najít vzorec pro korelaci mezi 3D akcelerometrem a srdečním tepem. Z [https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/](https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/) si stáhněte přísloušnou část datových souborů - HR a ACC soubory. Pak napište jednoduchý generátor funkcí s následujícím prototypem:
+
+`double transform(const double acc_x, const double acc_y, const double acc_z);`
+
+- Pro výslednou časovou řadu spočítejte její korelaci se srdečním tepem. Čím menší hodnota, tím lepší korelace. Tím vlastně dostanete fitness funkci, pokud budete generovat těla transformační funkcí evolučním/genetickým algoritmem, jako to např. dělá genetické programovaní nebo gramatická evoluce.
+
+- Celý výpočet spusťte na OpenCL zařízení - tj. nemusíte psát parser výrazů, ale OpenCL driver to udělá za vás. Je vhodné, aby se výpočet míry korelace a transformace odehrál celý na GPU, čímž se pak vyhnete zbytečnému kopírování dat.
+Ve finále vyberte transformační funkci s co největší korelací a tu zobrazte v grafu společně se srdeční frekvencí. Graf vygenerujte jako .svg.
+
+
+poznámky
+
+- preprocess.: normalizace dat
+
+- transformační funkci -GPU gentický alg. - vektorově (CPU)
