@@ -6,7 +6,7 @@
 #include <sstream>
 
 RecordHR::RecordHR(double value, const std::string &timeStr) : value(value) {
-
+//     todo move ss to main
     std::istringstream ss(timeStr);
 
     int year, month, day, hour, minute, second;

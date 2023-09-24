@@ -15,9 +15,9 @@ int main(int argc, char **argv) {
 
     while (std::getline(file, line)) {
         if (line == "datetime, hr") continue;
-        std::cout <<  line.substr(20, line.size() -1 ) << std::endl;
-        std::cout <<  "" << line.substr(0, 19) << std::endl;
-        data_hr.emplace_back(RecordHR(std::stod(line.substr(21, line.size() - 1)), line.substr(0, 20)));
+        data_hr.emplace_back(
+                RecordHR(std::stod(line.substr(20, line.size() - 1)),
+                         line.substr(0, 19)));
     }
     std::cout <<  "done " << data_hr.size() << std::endl;
 
