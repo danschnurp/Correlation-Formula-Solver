@@ -7,18 +7,15 @@
 #include <chrono>
 
 class RecordHR {
+
 public:
-    RecordHR(double value, const std::string &timeStr);
+    RecordHR(time_t timestamp, double x);
 
-private:
-public:
-    double getValue() const;
+    time_t getTimestamp() const;
 
-    const tm &getTimeInfo() const;
-
-private:
-    double value;
-    std::tm timeInfo;
+protected:
+    time_t timestamp;
+    double x;
 
 };
 
