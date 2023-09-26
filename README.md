@@ -11,7 +11,7 @@ Ve finále vyberte transformační funkci s co největší korelací a tu
 
 poznámky
 
-- preprocess.: normalizace dat
+- preprocess.: normalizace dat, extrapolace chybějících (HR)
 
 - transformační funkci -GPU
 
@@ -20,3 +20,6 @@ poznámky
 - můžeme for each
 
 - build v cmake
+
+- může selhat messenger mezi CPU a GPU v OpenCL
+  - využít znalosti problému byzantine generals
