@@ -50,7 +50,7 @@ void Loader::parse_HR_line() {
 std::vector<RecordACC> Loader::load_ACC_data(const std::string &input_path) {
     std::ifstream file;
     file.open(input_path, std::ios::in);
-    if (! file.is_open()) throw  std::runtime_error{"HR_xxx.csv not found..."};
+    if (! file.is_open()) throw  std::runtime_error{"ACC_xxx.csv not found..."};
     std::vector<RecordACC> data_acc;
     while (std::getline(file, line)) {
         if (line == "datetime, hr") continue;

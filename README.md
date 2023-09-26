@@ -23,3 +23,13 @@ poznámky
 
 - může selhat messenger mezi CPU a GPU v OpenCL
   - využít znalosti problému byzantine generals
+
+
+### opencl
+
+`export CPPFLAGS="-I/usr/local/opt/opencl-clhpp-headers/include"`
+
+
+`export PKG_CONFIG_PATH="/usr/local/opt/opencl-clhpp-headers/share/pkgconfig"`
+
+
