@@ -13,7 +13,9 @@ poznámky
 
 - preprocess.: normalizace dat
 
-- transformační funkci -GPU gentický alg. - vektorově (CPU)
+- transformační funkci -GPU
+
+- genetický alg. - vektorově (CPU)
 
 - můžeme for each
 
