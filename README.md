@@ -19,7 +19,7 @@ poznámky
 
 - můžeme for each
 
-- build v cmake
+- build v cmake ?"aspoň c++17"?
 
 - může selhat messenger mezi CPU a GPU v OpenCL
   - využít znalosti problému byzantine generals
