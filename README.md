@@ -20,3 +20,6 @@ poznámky
 - můžeme for each
 
 - build v cmake
+
+- může selhat messenger mezi CPU a GPU v OpenCL
+  - využít znalosti problému byzantine generals
