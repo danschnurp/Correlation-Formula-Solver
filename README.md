@@ -11,7 +11,7 @@ Ve finále vyberte transformační funkci s co největší korelací a tu
 
 poznámky
 
-- preprocess.: normalizace dat
+- preprocess.: normalizace dat (hodnoty mezi 0 a 1)
 
 - transformační funkci -GPU
 
