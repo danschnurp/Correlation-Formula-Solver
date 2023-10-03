@@ -11,7 +11,7 @@ Ve finále vyberte transformační funkci s co největší korelací a tu
 
 poznámky
 
-- preprocess.: normalizace dat, extrapolace chybějících (HR)
+- preprocess.: normalizace dat (hodnoty mezi 0 a 1), extrapolace chybějících (HR)
 
 - transformační funkci -GPU
 
