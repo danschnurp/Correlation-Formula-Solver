@@ -4,12 +4,13 @@
 #include "Loader.h"
 #include <memory>
 #include <thread>
-#include <CL/cl2.hpp>
+#include <CL/opencl.hpp>
 
 int prepare_opencl() {
 
   cl::Platform platform;
   cl::Device device;
+  std::cout << std::endl;
 
   std::vector<cl::Platform> platforms;
   cl::Platform::get(&platforms);
