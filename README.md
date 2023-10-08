@@ -11,11 +11,11 @@ git clone https://github.com/KhronosGroup/OpenCL-Headers
 cmake -D CMAKE_INSTALL_PREFIX=./OpenCL-Headers/install -S ./OpenCL-Headers -B ./OpenCL-Headers/build
 cmake --build ./OpenCL-Headers/build --target install -j 6
 
-cmake -D CMAKE_PREFIX_PATH=./ -D CMAKE_INSTALL_PREFIX=./OpenCL-ICD-Loader/install -S ./OpenCL-ICD-Loader -B
-./OpenCL-ICD-Loader/build
+cmake -D CMAKE_PREFIX_PATH=C:\Users\dartix\CLionProjects\kiv-ppr\OpenCL-Headers\install -D
+CMAKE_INSTALL_PREFIX=./OpenCL-ICD-Loader/install -S ./OpenCL-ICD-Loader -B ./OpenCL-ICD-Loader/build
 cmake --build ./OpenCL-ICD-Loader/build --target install -j 6
 
-cmake -D CMAKE_PREFIX_PATH="./OpenCL-Headers/install;./OpenCL-ICD-Loader/install" -D
+cmake -D CMAKE_PREFIX_PATH=C:\Users\dartix\CLionProjects\kiv-ppr\OpenCL-ICD-Loader\install -D
 CMAKE_INSTALL_PREFIX=./OpenCL-CLHPP/install -S ./OpenCL-CLHPP -B ./OpenCL-CLHPP/build
 cmake --build ./OpenCL-CLHPP/build --target install -j 6
 
