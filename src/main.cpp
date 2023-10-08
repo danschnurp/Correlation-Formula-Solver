@@ -6,7 +6,7 @@
 #include <thread>
 #include <CL/opencl.hpp>
 
-int prepare_opencl() {
+bool prepare_opencl() {
 
   cl::Platform platform;
   cl::Device device;
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
       std::cout << "Time taken: " << duration.count() / 1000 << " seconds" << std::endl;
 
-      if (prepare_opencl()) {
+      if (!prepare_opencl()) {
         throw std::runtime_error{"OpenCL not found..."};
       }
 
