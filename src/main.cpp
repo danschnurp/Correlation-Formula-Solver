@@ -3,125 +3,70 @@
 //
 #include "Loader.h"
 #include <memory>
-#include <thread>
-#include <CL/opencl.hpp>
+#include <OpenCL/opencl.h>
 
-bool prepare_opencl() {
-
-  cl::Platform platform;
-  cl::Device device;
-  std::cout << std::endl;
-
-  std::vector<cl::Platform> platforms;
-  cl::Platform::get(&platforms);
-
-  if (platforms.empty()) {
-    std::cerr << "No OpenCL platforms found." << std::endl;
-    return false;
+int prepare_opencl() {
+  // todo device_id context ...ven
+  cl_device_id device_id;
+  int gpu = 1;
+  int err = clGetDeviceIDs(NULL, gpu ? CL_DEVICE_TYPE_GPU : CL_DEVICE_TYPE_CPU, 1, &device_id, NULL);
+  if (err != CL_SUCCESS) {
+    std::cout <<   "Error: Failed to create a device group!" << std::endl;
+    return EXIT_FAILURE;
+  } else {
+    std::cout <<   "Device group created" << std::endl;
   }
 
-  platform = platforms[0];
-
-  std::vector<cl::Device> devices;
-  platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
-
-  if (devices.empty()) {
-    std::cerr << "No suitable OpenCL devices found." << std::endl;
-    return false;
+  cl_context context;
+  // Create a compute context
+  //
+  context = clCreateContext(0, 1, &device_id, NULL, NULL, &err);
+  if (!context) {
+    std::cout <<  "Error: Failed to create a compute context!" << std::endl;
+    return EXIT_FAILURE;
+  } else {
+    std::cout <<   "Compute context created" << std::endl;
   }
 
-  device = devices[0];
-
-  cl::Context context(device);
-
-  return true;
-
-//  cl::Program::Sources sources;
-//  sources.push_back({your_kernel_source_code_here});
-//
-//  cl::Program program(context, sources);
-
-//program.build();
-
-//  cl::Kernel kernel(program, "your_kernel_function_name");
-
-//kernel arguments
-
-//  kernel.setArg(0, arg0);
-//  kernel.setArg(1, arg1);
-// ...
-
-//execute
-
-//  cl::CommandQueue queue(context, device);
-//  cl::NDRange global_work_size(/* specify global work size */);
-//  queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_work_size);
-//  queue.finish();
-
-
-// read back
-
-//  cl::Buffer buffer(context, CL_MEM_READ_WRITE, sizeof(/* specify buffer size */));
-//  queue.enqueueReadBuffer(buffer, CL_TRUE, 0, sizeof(/* specify buffer size */), result_data);
-
-
+  cl_command_queue commands;
+  // Create a command commands
+  //
+  commands = clCreateCommandQueue(context, device_id, 0, &err);
+  if (!commands) {
+    std::cout << "Error: Failed to create a Command Queue!" << std::endl;
+    return EXIT_FAILURE;
+  }  else {
+    std::cout <<   "Command Queue created" << std::endl;
+  }
+  return EXIT_SUCCESS;
 
 }
 
 int main(int argc, char **argv) {
-    try {
+  try {
+    auto loader = std::make_unique<Loader>();
 
-      auto start_time = std::chrono::high_resolution_clock::now();
-      std::vector<RecordHR> data_hr;
-      std::vector<RecordACC> data_acc;
-      std::string hr_filename = "../data/HR_007.csv";
-      std::string acc_filename = "../data/HR_007.csv";
+    auto data_hr = loader->load_HR_data("../data/HR_007.csv");
+    std::cout <<  "done hr " << data_hr.size() << std::endl;
 
-      auto hr_thread_loader = std::thread([&hr_filename, &data_hr]() {
-        try {
-          data_hr = load_HR_data(hr_filename);
-        }
-        catch (std::exception &err) {
-          std::cerr << std::endl << err.what() << std::endl;
-        }
+    auto start_time = std::chrono::high_resolution_clock::now();
 
-      });
+    auto data_acc = loader->load_ACC_data("../data/ACC_007.csv");
+    std::cout <<  "done acc " << data_acc.size() << std::endl;
 
-      auto acc_thread_loader = std::thread([&acc_filename, &data_acc]() {
-        try {
-          data_acc = load_ACC_data(acc_filename);
-        }
-        catch (std::exception &err) {
-          std::cerr << std::endl << err.what() << std::endl;
-        }
-      });
-
-      if (hr_thread_loader.joinable()) {
-        hr_thread_loader.join();
-      }
-      if (acc_thread_loader.joinable()) {
-        acc_thread_loader.join();
-      }
-
-      if (data_acc.empty()) {
-        return 1;
-      }
-      if (data_hr.empty()) {
-        return 1;
-      }
-
-      auto end_time = std::chrono::high_resolution_clock::now();
-      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-      std::cout << "Time taken: " << duration.count() / 1000 << " seconds" << std::endl;
-
-      if (!prepare_opencl()) {
-        throw std::runtime_error{"OpenCL not found..."};
-      }
-
+    auto end_time = std::chrono::high_resolution_clock::now();
+    // Calculate the duration
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    // Print the duration in milliseconds
+    std::cout << "Time taken: " << duration.count() / 1000 << " seconds" << std::endl;
+    if (prepare_opencl()) {
+      throw  std::runtime_error{"OpenCL not found..."};
     }
-    catch (std::exception &err) {
-      std::cerr << std::endl << err.what() << std::endl;
-      return 1;
-    }
+
+  }
+  catch (std::exception & err) {
+    std::cerr << std::endl << err.what() << std::endl;
+    return 1;
+  }
 
 }
