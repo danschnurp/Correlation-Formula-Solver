@@ -6,7 +6,6 @@ if (APPLE)
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -framework OpenCL")
 else ()
     set(CMAKE_PREFIX_PATH "./OpenCL-Headers/build;./OpenCL-ICD-Loader/build;./OpenCL-CLHPP/build" ./)
-    set(CMAKE_CXX_FLAGS "-Wall  -Wpedantic")
 endif (APPLE)
 
 project(ppr)
