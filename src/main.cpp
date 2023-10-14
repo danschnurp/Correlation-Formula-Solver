@@ -75,8 +75,7 @@ int main(int argc, char **argv) {
       std::vector<RecordHR> data_hr;
       std::vector<RecordACC> data_acc;
       std::string hr_filename = "../data/HR_007.csv";
-      std::string acc_filename = "../data/HR_007.csv";
-
+      std::string acc_filename = "../data/ACC_007.csv";
       auto hr_thread_loader = std::thread([&hr_filename, &data_hr]() {
         try {
           data_hr = load_HR_data(hr_filename);
@@ -113,6 +112,8 @@ int main(int argc, char **argv) {
       auto end_time = std::chrono::high_resolution_clock::now();
       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
       std::cout << "Time taken: " << duration.count() / 1000 << " seconds" << std::endl;
+      std::cout << "done acc " << data_acc.size() << std::endl;
+      std::cout << "done hr " << data_hr.size() << std::endl;
 
       if (!prepare_opencl()) {
         throw std::runtime_error{"OpenCL not found..."};

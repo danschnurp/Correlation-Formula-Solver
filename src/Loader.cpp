@@ -53,7 +53,6 @@ std::vector<RecordACC> load_ACC_data(const std::string &input_path) {
     std::ifstream file;
     file.open(input_path, std::ios::in);
     if (! file.is_open()) throw  std::runtime_error{"ACC_xxx.csv not found..."};
-
     std::vector<RecordACC> data_acc;
   std::string line;
   int year, month, day, hour, minute, second, microsecond;
@@ -61,9 +60,8 @@ std::vector<RecordACC> load_ACC_data(const std::string &input_path) {
   time_t timestamp;
   std::istringstream ss;
   std::tm timeInfo{};
-
+  std::getline(file, line);
     while (std::getline(file, line)) {
-        if (line == "datetime, hr") continue;
       ss.clear();
       ss.str(line);
       // Parse the input string
@@ -93,7 +91,6 @@ std::vector<RecordACC> load_ACC_data(const std::string &input_path) {
       ss >> y;
       ss.ignore(); // Ignore the comma (,)
       ss >> z;
-
       data_acc.emplace_back(timestamp, x, microsecond, y, z);
     }
   file.close();
