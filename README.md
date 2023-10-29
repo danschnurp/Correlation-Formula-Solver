@@ -2,7 +2,8 @@
 
 
 ## Setup OpenCL
-- https://github.com/KhronosGroup/OpenCL-SDK/releases/download/v2023.04.17/OpenCL-SDK-v2023.04.17-Win-x86.zip
+- https://github.com/KhronosGroup/OpenCL-SDK/releases
+- `v2023.04.17`
 - to: 
   - OpenCL-SDK/include
   - OpenCL-SDK/lib
