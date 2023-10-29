@@ -70,7 +70,7 @@ bool prepare_opencl() {
 
 int main(int argc, char **argv) {
     try {
-
+        std::cout << "starting... " << std::endl;
       auto start_time = std::chrono::high_resolution_clock::now();
       std::vector<RecordHR> data_hr;
       std::vector<RecordACC> data_acc;

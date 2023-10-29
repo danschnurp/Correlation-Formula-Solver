@@ -5,15 +5,15 @@ if (APPLE)
     set(CPPFLAGS "-I/usr/local/opt/opencl-clhpp-headers/include")
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -framework OpenCL")
 else ()
-    set(CMAKE_PREFIX_PATH "./OpenCL-Headers/build;./OpenCL-ICD-Loader/build;./OpenCL-CLHPP/build" ./)
+    set(OpenCL_LIBRARY OpenCL-SDK/lib)
+    set(OpenCL_INCLUDE_DIR OpenCL-SDK/include)
+    link_directories(OpenCL-SDK/lib)
+    include_directories(OpenCL-SDK/include)
 endif (APPLE)
 
 project(ppr)
 
-find_package(OpenCLHeaders REQUIRED)
-find_package(OpenCLICDLoader REQUIRED)
-find_package(OpenCLHeadersCpp REQUIRED)
-
+find_package(OpenCL REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp src/RecordHR.h src/RecordHR.cpp
         src/RecordACC.h
@@ -23,8 +23,8 @@ add_executable(${PROJECT_NAME} src/main.cpp src/RecordHR.h src/RecordHR.cpp
 
 
 if (APPLE)
-    target_link_libraries(ppr ${OPENCL_LIBRARIES})
+    target_link_libraries(ppr OpenCL)
 else (
 )
-    target_link_libraries(ppr PRIVATE OpenCL::Headers OpenCL::OpenCL OpenCL::HeadersCpp)
+    target_link_libraries(ppr PRIVATE OpenCL)
 endif (APPLE)

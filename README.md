@@ -1,23 +1,13 @@
 # kiv-ppr
 
-### how to run
 
-https://github.com/KhronosGroup/OpenCL-CLHPP
+## Setup OpenCL
+- https://github.com/KhronosGroup/OpenCL-SDK/releases/download/v2023.04.17/OpenCL-SDK-v2023.04.17-Win-x86.zip
+- to: 
+  - OpenCL-SDK/include
+  - OpenCL-SDK/lib
 
-git clone --recursive https://github.com/KhronosGroup/OpenCL-CLHPP
-git clone https://github.com/KhronosGroup/OpenCL-ICD-Loader
-git clone https://github.com/KhronosGroup/OpenCL-Headers
-
-todo replace `/Users/danschnurpfeil/CLionProjects/kiv-ppr` with project dir
-
-cmake -D CMAKE_INSTALL_PREFIX=./OpenCL-Headers/install -S ./OpenCL-Headers -B ./OpenCL-Headers/build
-cmake --build ./OpenCL-Headers/build --target install -j 6
-
-cmake -D CMAKE_PREFIX_PATH="/Users/danschnurpfeil/CLionProjects/kiv-ppr/OpenCL-Headers/install" -D CMAKE_INSTALL_PREFIX=./OpenCL-ICD-Loader/install -S ./OpenCL-ICD-Loader -B ./OpenCL-ICD-Loader/build
-cmake --build ./OpenCL-ICD-Loader/build --target install -j 6
-
-cmake -D CMAKE_PREFIX_PATH="/Users/danschnurpfeil/CLionProjects/kiv-ppr/OpenCL-ICD-Loader/install;/Users/danschnurpfeil/CLionProjects/kiv-ppr/OpenCL-Headers/install" -D CMAKE_INSTALL_PREFIX=./OpenCL-CLHPP/install -S ./OpenCL-CLHPP -B ./OpenCL-CLHPP/build
-cmake --build ./OpenCL-CLHPP/build --target install -j 6
+### Zadání
 
 - Cílem práce je najít vzorec pro korelaci mezi 3D akcelerometrem a srdečním tepem. Z [https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/](https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/) si stáhněte přísloušnou část datových souborů - HR a ACC soubory. Pak napište jednoduchý generátor funkcí s následujícím prototypem:
 
