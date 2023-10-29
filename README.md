@@ -7,6 +7,8 @@
   - OpenCL-SDK/include
   - OpenCL-SDK/lib
 
+make sure you are loading with 64bit
+
 ### Zadání
 
 - Cílem práce je najít vzorec pro korelaci mezi 3D akcelerometrem a srdečním tepem. Z [https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/](https://physionet.org/content/big-ideas-glycemic-wearable/1.1.2/) si stáhněte přísloušnou část datových souborů - HR a ACC soubory. Pak napište jednoduchý generátor funkcí s následujícím prototypem:
