@@ -5,8 +5,8 @@
 #include "RecordHR.h"
 
 
-RecordHR::RecordHR(time_t timestamp, double x) : timestamp(timestamp), x(x) {}
+RecordHR::RecordHR(std::tm timestamp, double x) : timestamp(timestamp), x(x) {}
 
-time_t RecordHR::getTimestamp() const {
+std::tm RecordHR::getTimestamp() const {
     return timestamp;
 }

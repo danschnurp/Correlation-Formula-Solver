@@ -71,37 +71,46 @@ bool prepare_opencl() {
 int main(int argc, char **argv) {
     try {
         std::cout << "starting... " << std::endl;
+
+        bool load_sequential = true;
+
       auto start_time = std::chrono::high_resolution_clock::now();
       std::vector<RecordHR> data_hr;
         auto loader_hr = std::make_unique<DataGodLoader>();
       std::string hr_filename = "../data/HR_007.csv";
-
-      auto hr_thread_loader = std::thread([&hr_filename, &data_hr, &loader_hr]() {
-        try {
-          data_hr = loader_hr->load_HR_data(hr_filename);
-        }
-        catch (std::exception &err) {
-          std::cerr << std::endl << err.what() << std::endl;
-        }
-      });
         std::string acc_filename = "../data/ACC_007.csv";
         auto loader_acc = std::make_unique<DataGodLoader>();
         std::vector<RecordACC> data_acc;
-      auto acc_thread_loader = std::thread([&acc_filename, &data_acc, &loader_acc]() {
-        try {
-          data_acc = loader_acc->load_ACC_data(acc_filename);
-        }
-        catch (std::exception &err) {
-          std::cerr << std::endl << err.what() << std::endl;
-        }
-      });
 
-      if (hr_thread_loader.joinable()) {
-        hr_thread_loader.join();
-      }
-      if (acc_thread_loader.joinable()) {
-        acc_thread_loader.join();
-      }
+        if (load_sequential) {
+            data_acc = loader_acc->load_ACC_data(acc_filename);
+            data_hr = loader_hr->load_HR_data(hr_filename);
+        }
+       else {
+            auto hr_thread_loader = std::thread([&hr_filename, &data_hr, &loader_hr]() {
+                try {
+                    data_hr = loader_hr->load_HR_data(hr_filename);
+                }
+                catch (std::exception &err) {
+                    std::cerr << std::endl << err.what() << std::endl;
+                }
+            });
+            auto acc_thread_loader = std::thread([&acc_filename, &data_acc, &loader_acc]() {
+                try {
+                    data_acc = loader_acc->load_ACC_data(acc_filename);
+                }
+                catch (std::exception &err) {
+                    std::cerr << std::endl << err.what() << std::endl;
+                }
+            });
+
+            if (hr_thread_loader.joinable()) {
+                hr_thread_loader.join();
+            }
+            if (acc_thread_loader.joinable()) {
+                acc_thread_loader.join();
+            }
+        }
 
       if (data_acc.empty()) {
         return 1;

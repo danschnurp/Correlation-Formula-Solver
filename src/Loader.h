@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <chrono>
 #include "RecordHR.h"
 #include "RecordACC.h"
 
@@ -16,11 +17,11 @@ class DataGodLoader {
 private:
     std::vector<RecordACC> data_acc;
     std::string line;
-    int year, month, day, hour, minute, second, microsecond;
+    int second, microsecond;
     double x, y, z;
-    time_t timestamp;
+
     std::istringstream ss;
-    std::tm timeInfo{};
+    std::tm timeinfo{};
     std::vector<RecordHR> data_hr;
 
 public:

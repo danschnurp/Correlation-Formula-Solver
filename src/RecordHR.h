@@ -9,12 +9,12 @@
 class RecordHR {
 
 public:
-    RecordHR(time_t timestamp, double x);
+    RecordHR(std::tm timestamp, double x);
 
-    time_t getTimestamp() const;
+    std::tm getTimestamp() const;
 
 protected:
-    time_t timestamp;
+    std::tm timestamp;
     double x;
 
 };

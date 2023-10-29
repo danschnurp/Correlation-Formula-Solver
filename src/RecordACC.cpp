@@ -4,6 +4,6 @@
 
 #include "RecordACC.h"
 
-RecordACC::RecordACC(time_t timestamp, double x, double microsecond, double y, double z) : RecordHR(timestamp, x),
+RecordACC::RecordACC(std::tm timestamp, double x, double microsecond, double y, double z) : RecordHR(timestamp, x),
                                                                                            microsecond(microsecond),
                                                                                            y(y), z(z) {}

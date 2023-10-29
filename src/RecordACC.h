@@ -9,7 +9,7 @@
 class RecordACC : RecordHR {
 
 public:
-    RecordACC(time_t timestamp, double x, double microsecond, double y, double z);
+    RecordACC(std::tm timestamp, double x, double microsecond, double y, double z);
 
 private:
     double microsecond;
