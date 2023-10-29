@@ -32,7 +32,7 @@ bool prepare_opencl() {
 
   device = devices[0];
 
-  cl::Context context(device);
+  cl::Context context;
 
   return true;
 
@@ -73,22 +73,23 @@ int main(int argc, char **argv) {
         std::cout << "starting... " << std::endl;
       auto start_time = std::chrono::high_resolution_clock::now();
       std::vector<RecordHR> data_hr;
-      std::vector<RecordACC> data_acc;
+        auto loader_hr = std::make_unique<DataGodLoader>();
       std::string hr_filename = "../data/HR_007.csv";
-      std::string acc_filename = "../data/ACC_007.csv";
-      auto hr_thread_loader = std::thread([&hr_filename, &data_hr]() {
+
+      auto hr_thread_loader = std::thread([&hr_filename, &data_hr, &loader_hr]() {
         try {
-          data_hr = load_HR_data(hr_filename);
+          data_hr = loader_hr->load_HR_data(hr_filename);
         }
         catch (std::exception &err) {
           std::cerr << std::endl << err.what() << std::endl;
         }
-
       });
-
-      auto acc_thread_loader = std::thread([&acc_filename, &data_acc]() {
+        std::string acc_filename = "../data/ACC_007.csv";
+        auto loader_acc = std::make_unique<DataGodLoader>();
+        std::vector<RecordACC> data_acc;
+      auto acc_thread_loader = std::thread([&acc_filename, &data_acc, &loader_acc]() {
         try {
-          data_acc = load_ACC_data(acc_filename);
+          data_acc = loader_acc->load_ACC_data(acc_filename);
         }
         catch (std::exception &err) {
           std::cerr << std::endl << err.what() << std::endl;
