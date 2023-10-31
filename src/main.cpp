@@ -10,7 +10,7 @@ bool prepare_opencl() {
 
   cl::Platform platform;
   cl::Device device;
-  std::cout << std::endl;
+  std::cout<< "preparing opencl" << std::endl;
 
   std::vector<cl::Platform> platforms;
   cl::Platform::get(&platforms);
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     try {
         std::cout << "starting... " << std::endl;
 
-        bool load_sequential = true;
+        bool load_sequential = false;
 
       auto start_time = std::chrono::high_resolution_clock::now();
       std::vector<RecordHR> data_hr;
@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
       std::cerr << std::endl << err.what() << std::endl;
       return 1;
     }
-
+    std::cout << "done... " << std::endl;
     return 0;
 
 }

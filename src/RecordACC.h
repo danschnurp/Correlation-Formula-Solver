@@ -6,15 +6,16 @@
 #define PPRKA_SVG_RECORDACC_H
 #include "RecordHR.h"
 
-class RecordACC : RecordHR {
+class RecordACC {
 
 public:
-    RecordACC(std::tm timestamp, double x, double microsecond, double y, double z);
+    RecordACC();
 
-private:
-    double microsecond;
-    double y;
-    double z;
+    std::vector<double> microsecond;
+    std::vector<double> y;
+    std::vector<double> z;
+    std::vector<double> x;
+    std::vector<std::tm> timestamp;
 
 
 };

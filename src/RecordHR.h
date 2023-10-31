@@ -9,14 +9,10 @@
 class RecordHR {
 
 public:
-    RecordHR(std::tm timestamp, double x);
+    RecordHR();
 
-    std::tm getTimestamp() const;
-
-protected:
-    std::tm timestamp;
-    double x;
-
+    std::vector<double> x;
+    std::vector<std::tm> timestamp;
 };
 
 
