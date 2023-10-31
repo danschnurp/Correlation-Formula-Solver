@@ -4,13 +4,14 @@
 #include "Loader.h"
 #include <memory>
 #include <thread>
+#ifndef __APPLE__
 #include <CL/opencl.hpp>
 
 bool prepare_opencl() {
 
   cl::Platform platform;
   cl::Device device;
-  std::cout<< "preparing opencl" << std::endl;
+  std::cout << std::endl;
 
   std::vector<cl::Platform> platforms;
   cl::Platform::get(&platforms);
@@ -68,11 +69,16 @@ bool prepare_opencl() {
 
 }
 
+
+#endif
+
 int main(int argc, char **argv) {
     try {
         std::cout << "starting... " << std::endl;
 
         bool load_sequential = false;
+
+      std::cout << "load sequentially: " << load_sequential << std::endl;
 
       auto start_time = std::chrono::high_resolution_clock::now();
       std::vector<RecordHR> data_hr;
@@ -122,13 +128,13 @@ int main(int argc, char **argv) {
       auto end_time = std::chrono::high_resolution_clock::now();
       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
       std::cout << "Time taken: " << duration.count() / 1000 << " seconds" << std::endl;
-      std::cout << "done acc " << data_acc.size() << std::endl;
-      std::cout << "done hr " << data_hr.size() << std::endl;
-
+      std::cout << "loaded acc " << data_acc.size() << std::endl;
+      std::cout << "loaded hr " << data_hr.size() << std::endl;
+#ifndef __APPLE__
       if (!prepare_opencl()) {
         throw std::runtime_error{"OpenCL not found..."};
       }
-
+#endif
     }
     catch (std::exception &err) {
       std::cerr << std::endl << err.what() << std::endl;

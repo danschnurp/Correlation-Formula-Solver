@@ -31,6 +31,5 @@
 *.out
 *.app
 /data/
-/OpenCL-CLHPP/
-/OpenCL-Headers/
-/OpenCL-ICD-Loader/
+/OpenCL-SDK/
+/OpenCL-SDK/include/OpenCL/
