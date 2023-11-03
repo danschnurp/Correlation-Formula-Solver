@@ -1,5 +1,32 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.28)
 set(CMAKE_CXX_STANDARD 20)
+
+
+
+
+
+
+# find Vulkan SDK
+find_package( Vulkan REQUIRED )
+
+# set up Vulkan C++ module
+add_library(VulkanCppModule)
+target_sources(VulkanCppModule PRIVATE
+  FILE_SET CXX_MODULES
+  FILES ${Vulkan_INCLUDE_DIR}/vulkan.cppm
+)
+
+# link Vulkan C++ module into your project
+add_executable(YourProject main.cpp)
+target_link_libraries(YourProject VulkanCppModule)
+
+
+
+
+
+
+
+
 
 project(ppr)
 
