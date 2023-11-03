@@ -5,6 +5,7 @@
 #ifndef PPRKA_SVG_RECORDHR_H
 #define PPRKA_SVG_RECORDHR_H
 #include <chrono>
+#include <vector>
 
 class RecordHR {
 

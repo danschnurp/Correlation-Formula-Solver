@@ -1,78 +1,18 @@
-//
-// Created by Dan Schnurpfeil on 21.09.2023.
-//
 #include "Loader.h"
 #include <memory>
 #include <thread>
-#ifndef __APPLE__
-#include <CL/opencl.hpp>
-
-bool prepare_opencl() {
-
-  cl::Platform platform;
-  cl::Device device;
-  std::cout << std::endl;
-
-  std::vector<cl::Platform> platforms;
-  cl::Platform::get(&platforms);
-
-  if (platforms.empty()) {
-    std::cerr << "No OpenCL platforms found." << std::endl;
-    return false;
-  }
-
-  platform = platforms[0];
-
-  std::vector<cl::Device> devices;
-  platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
-
-  if (devices.empty()) {
-    std::cerr << "No suitable OpenCL devices found." << std::endl;
-    return false;
-  }
-
-  device = devices[0];
-
-  cl::Context context;
-
-  return true;
-
-//  cl::Program::Sources sources;
-//  sources.push_back({your_kernel_source_code_here});
-//
-//  cl::Program program(context, sources);
-
-//program.build();
-
-//  cl::Kernel kernel(program, "your_kernel_function_name");
-
-//kernel arguments
-
-//  kernel.setArg(0, arg0);
-//  kernel.setArg(1, arg1);
-// ...
-
-//execute
-
-//  cl::CommandQueue queue(context, device);
-//  cl::NDRange global_work_size(/* specify global work size */);
-//  queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_work_size);
-//  queue.finish();
-
-
-// read back
-
-//  cl::Buffer buffer(context, CL_MEM_READ_WRITE, sizeof(/* specify buffer size */));
-//  queue.enqueueReadBuffer(buffer, CL_TRUE, 0, sizeof(/* specify buffer size */), result_data);
+#include <iostream>
+#include "VulkanGpu.h"
 
 
 
-}
-
-
-#endif
 
 int main(int argc, char **argv) {
+
+  auto gpu_comp_unit = std::make_unique<VulkanGpu>();
+  gpu_comp_unit->prepare();
+  return 0;
+
     try {
         std::cout << "starting... " << std::endl;
 
@@ -130,11 +70,7 @@ int main(int argc, char **argv) {
       std::cout << "Time taken: " << duration.count() / 1000 << " seconds" << std::endl;
       std::cout << "loaded acc " << data_acc.size() << std::endl;
       std::cout << "loaded hr " << data_hr.size() << std::endl;
-#ifndef __APPLE__
-      if (!prepare_opencl()) {
-        throw std::runtime_error{"OpenCL not found..."};
-      }
-#endif
+
     }
     catch (std::exception &err) {
       std::cerr << std::endl << err.what() << std::endl;
