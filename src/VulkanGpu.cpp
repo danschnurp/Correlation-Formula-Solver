@@ -18,11 +18,34 @@ int VulkanGpu::prepare() {
   // Create a Vulkan device
   vk::Device device = selectedDevice.createDevice(vk::DeviceCreateInfo());
 
+
+  // Print device information.
+  for (const auto &i : physicalDevices) {
+    VkPhysicalDeviceProperties deviceProperties;
+    vkGetPhysicalDeviceProperties(i, &deviceProperties);
+
+    std::cout << "Device Name: " << deviceProperties.deviceName << std::endl;
+    std::cout << "Device Type: " << deviceProperties.deviceType << std::endl;
+    std::cout << "API Version: " << VK_VERSION_MAJOR(deviceProperties.apiVersion) << "."
+              << VK_VERSION_MINOR(deviceProperties.apiVersion) << "." << VK_VERSION_PATCH(deviceProperties.apiVersion)
+              << std::endl;
+    std::cout << "Driver Version: " << deviceProperties.driverVersion << std::endl;
+    std::cout << "Vendor ID: " << deviceProperties.vendorID << std::endl;
+    std::cout << "Device ID: " << deviceProperties.deviceID << std::endl;
+
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceFeatures(i, &deviceFeatures);
+    std::cout << "Geometry Shader Support: " << (deviceFeatures.geometryShader ? "Yes" : "No") << std::endl;
+    std::cout << "Tessellation Shader Support: " << (deviceFeatures.tessellationShader ? "Yes" : "No") << std::endl;
+
+    std::cout << "--------------------------------------" << std::endl;
+  }
+  return 0;
   vk::PhysicalDeviceMemoryProperties memProperties = selectedDevice.getMemoryProperties();
 
   std::cout << memProperties.memoryTypeCount << std::endl;
 
-  // Create a Vulkan command pool
+  // Create a Vulkan command pool todo fails on memory
   vk::CommandPoolCreateInfo commandPoolCreateInfo;
   commandPoolCreateInfo.queueFamilyIndex = 0;  // Choose a suitable queue family index
   vk::CommandPool commandPool = device.createCommandPool(commandPoolCreateInfo);
