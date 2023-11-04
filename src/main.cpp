@@ -11,7 +11,6 @@ int main(int argc, char **argv) {
 
   auto gpu_comp_unit = std::make_unique<VulkanGpu>();
   gpu_comp_unit->prepare();
-  return 0;
 
     try {
         std::cout << "starting... " << std::endl;
