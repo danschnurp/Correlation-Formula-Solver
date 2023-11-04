@@ -4,6 +4,4 @@
 
 #include "RecordACC.h"
 
-RecordACC::RecordACC() {
-
-}
+RecordACC::RecordACC() = default;

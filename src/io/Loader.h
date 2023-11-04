@@ -12,22 +12,23 @@
 #include "RecordHR.h"
 #include "RecordACC.h"
 
+std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
+    std::string &hr_filename, std::string &acc_filename, bool load_sequential);
+
 class DataGodLoader {
 
 private:
-    std::vector<RecordACC> data_acc;
     std::string line;
-    int second, microsecond;
+  int microsecond;
     double x, y, z;
 
     std::istringstream ss;
     std::tm timeinfo{};
-    std::vector<RecordHR> data_hr;
 
 public:
 
-std::vector<RecordHR> load_HR_data(const std::string& input_path);
-  std::vector<RecordACC> load_ACC_data(const std::string& input_path);
+  std::shared_ptr<RecordHR> load_HR_data(const std::string &input_path);
+  std::shared_ptr<RecordACC> load_ACC_data(const std::string &input_path);
 
 };
 

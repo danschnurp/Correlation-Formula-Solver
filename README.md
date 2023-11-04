@@ -1,24 +1,12 @@
 # kiv-ppr
 
-### Prerequisites (windows)
+### Prerequisites
 
-- VulkanSDK-1.3.268.0
+- [VulkanSDK-1.3.268.0](https://vulkan.lunarg.com/sdk/home)
 - [Vulkan-Hpp v1.3.269](https://github.com/KhronosGroup/Vulkan-Hpp/releases/tag/v1.3.269)
 - ninja 11
 - [llvm 17.0.1](https://github.com/llvm/llvm-project/releases/tag/llvmorg-17.0.1)
 - cmake 3.28
-
-[//]: # (## Setup OpenCL)
-
-[//]: # (- https://github.com/KhronosGroup/OpenCL-SDK/releases)
-
-[//]: # (- `v2023.04.17`)
-
-[//]: # (- to: )
-
-[//]: # (  - OpenCL-SDK/include)
-
-[//]: # (  - OpenCL-SDK/lib)
 
 make sure you are loading with 64bit
 
@@ -49,12 +37,5 @@ poznámky
 - může selhat messenger mezi CPU a GPU v OpenCL
   - využít znalosti problému byzantine generals
 
-
-### opencl
-
-`export CPPFLAGS="-I/usr/local/opt/opencl-clhpp-headers/include"`
-
-
-`export PKG_CONFIG_PATH="/usr/local/opt/opencl-clhpp-headers/share/pkgconfig"`
-
+[diagram2.pdf](diagram2.pdf)
 

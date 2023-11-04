@@ -4,8 +4,4 @@
 
 #include "RecordHR.h"
 
-
-
-RecordHR::RecordHR() {
-
-}
+RecordHR::RecordHR() = default;
