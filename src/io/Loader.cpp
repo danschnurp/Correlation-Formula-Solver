@@ -11,22 +11,23 @@ std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
   auto loader_hr = std::make_unique<DataGodLoader>();
 
   auto loader_acc = std::make_unique<DataGodLoader>();
-
+  std::shared_ptr<RecordACC> data_acc;
+  std::shared_ptr<RecordHR> data_hr;
   if (load_sequential) {
-    auto data_acc = loader_acc->load_ACC_data(acc_filename);
-    auto data_hr = loader_hr->load_HR_data(hr_filename);
+    data_acc = loader_acc->load_ACC_data(acc_filename);
+    data_hr = loader_hr->load_HR_data(hr_filename);
   } else {
-    auto hr_thread_loader = std::thread([&hr_filename, &loader_hr]() {
+    auto hr_thread_loader = std::thread([&hr_filename, &data_hr, &loader_hr]() {
       try {
-        auto data_hr = loader_hr->load_HR_data(hr_filename);
+        data_hr = loader_hr->load_HR_data(hr_filename);
       }
       catch (std::exception &err) {
         std::cerr << std::endl << err.what() << std::endl;
       }
     });
-    auto acc_thread_loader = std::thread([&acc_filename, &loader_acc]() {
+    auto acc_thread_loader = std::thread([&acc_filename, &data_acc, &loader_acc]() {
       try {
-        auto data_acc = loader_acc->load_ACC_data(acc_filename);
+        data_acc = loader_acc->load_ACC_data(acc_filename);
       }
       catch (std::exception &err) {
         std::cerr << std::endl << err.what() << std::endl;
@@ -40,7 +41,7 @@ std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
       acc_thread_loader.join();
     }
   }
-
+  return std::make_pair(data_acc, data_hr);
 }
 
 std::shared_ptr<RecordHR> DataGodLoader::load_HR_data(const std::string &input_path) {
