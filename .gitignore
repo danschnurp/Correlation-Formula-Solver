@@ -33,3 +33,6 @@
 /data/
 /OpenCL-SDK/
 /OpenCL-SDK/include/OpenCL/
+.idea
+.DS_Store
+*.workspace

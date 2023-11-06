@@ -3,6 +3,11 @@
 //
 
 #include "Loader.h"
+#include <thread>
+
+void normalize(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> data) {
+
+}
 
 std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
     std::string &hr_filename, std::string &acc_filename, bool load_sequential) {

@@ -3,10 +3,9 @@
 ### Prerequisites
 
 - [VulkanSDK-1.3.268.0](https://vulkan.lunarg.com/sdk/home)
-- [Vulkan-Hpp v1.3.269](https://github.com/KhronosGroup/Vulkan-Hpp/releases/tag/v1.3.269)
-- ninja 11
+- ninja
 - [llvm 17.0.1](https://github.com/llvm/llvm-project/releases/tag/llvmorg-17.0.1)
-- cmake 3.28
+- cmake
 
 make sure you are loading with 64bit
 
