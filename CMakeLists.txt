@@ -18,7 +18,9 @@ set(target_sources
         io/RecordACC.h io/RecordACC.cpp
         io/Loader.h io/Loader.cpp
         VulkanGpu.cpp VulkanGpu.h
-        preprocessing/utils.cpp preprocessing/utils.h)
+        preprocessing/utils.cpp preprocessing/utils.h
+        genetic_alg/Node.cpp genetic_alg/Node.h
+        genetic_alg/Equation.cpp genetic_alg/Equation.h src/genetic_alg/Population.cpp src/genetic_alg/Population.h)
 
 list(TRANSFORM target_sources PREPEND "src/")
 

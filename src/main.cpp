@@ -21,10 +21,6 @@ int main(int argc, char **argv) {
 
       auto data = load_data(hr_filename, acc_filename, load_sequential);
 
-      normalize_data(data);
-//      for (auto &i: data.second->x) {
-//          std::cout << i << " ";
-//      }
       if (data.first->x.empty()) {
         return 1;
       }
@@ -36,6 +32,9 @@ int main(int argc, char **argv) {
       std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes" << std::endl;
       std::cout << "loaded acc " << data.first->x.size() << std::endl;
       std::cout << "loaded hr " << data.second->x.size() << std::endl;
+
+      normalize_data(data);
+
     }
     catch (std::exception &err) {
       std::cerr << std::endl << err.what() << std::endl;
