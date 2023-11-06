@@ -1,5 +1,4 @@
 #include "io/Loader.h"
-#include <memory>
 #include <thread>
 #include <iostream>
 #include "VulkanGpu.h"
@@ -18,8 +17,10 @@ int main(int argc, char **argv) {
 
       auto data = load_data(hr_filename, acc_filename, load_sequential);
 
-      normalize(data);
-
+      normalize_data(data);
+//      for (auto &i: data.second->x) {
+//          std::cout << i << " ";
+//      }
       if (data.first->x.empty()) {
         return 1;
       }
