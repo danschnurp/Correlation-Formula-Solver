@@ -12,10 +12,6 @@
 #include "RecordHR.h"
 #include "RecordACC.h"
 
-void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
-
-void normalize_data(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
-
 /**
  * The function `load_data` loads HR and ACC data either sequentially or in parallel and returns a pair of shared pointers
  * to the loaded data.

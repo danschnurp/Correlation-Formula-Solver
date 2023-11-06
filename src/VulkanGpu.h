@@ -1,5 +1,5 @@
 //
-// Created by dartix on 3 Nov 2023.
+// Created by Dan Schnurpfeil on 3.11.2023.
 //
 
 #ifndef PPR_SRC_VULKANGPU_H_

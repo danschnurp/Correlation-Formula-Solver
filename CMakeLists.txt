@@ -12,14 +12,14 @@ find_package( Vulkan REQUIRED )
 
 include_directories(${VULKAN_SDK}/Inlude)
 
-
 set(target_sources
         main.cpp
         io/RecordHR.h io/RecordHR.cpp
         io/RecordACC.h io/RecordACC.cpp
         io/Loader.h io/Loader.cpp
         VulkanGpu.cpp VulkanGpu.h
-)
+        preprocessing/utils.cpp preprocessing/utils.h)
+
 list(TRANSFORM target_sources PREPEND "src/")
 
 # link Vulkan C++ module into your project
