@@ -6,6 +6,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include <iostream>
+#include <fstream>
 
 int VulkanGpu::prepare() {
   // Create a Vulkan instance
@@ -13,15 +14,7 @@ int VulkanGpu::prepare() {
 
   // Enumerate physical devices (GPUs)
   std::vector<vk::PhysicalDevice> physicalDevices = instance.enumeratePhysicalDevices();
-  std::cout << physicalDevices[1] << std::endl;
   // Choose a physical device (GPU)
-  vk::PhysicalDevice selectedDevice = physicalDevices[0];
-
-
-
-  // Create a Vulkan device
-  vk::Device device = selectedDevice.createDevice(vk::DeviceCreateInfo());
-
 
   // Print device information.
   for (const auto &i : physicalDevices) {
@@ -44,6 +37,37 @@ int VulkanGpu::prepare() {
 
     std::cout << "--------------------------------------" << std::endl;
   }
+    // selects last device in queue
+    vk::PhysicalDevice selectedDevice = physicalDevices[physicalDevices.size() - 1];
+
+    uint32_t queueFamilyIndex = 0;
+
+    const float queuePrioritory = 1.0f;
+    const VkDeviceQueueCreateInfo deviceQueueCreateInfo = {
+            VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            0,
+            0,
+            queueFamilyIndex,
+            1,
+            &queuePrioritory
+    };
+
+    const VkDeviceCreateInfo deviceCreateInfo = {
+            VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+            0,
+            0,
+            1,
+            &deviceQueueCreateInfo,
+            0,
+            0,
+            0,
+            0,
+            0
+    };
+
+
+    // Create a Vulkan device
+    vk::Device device = selectedDevice.createDevice(deviceCreateInfo);
 
   vk::PhysicalDeviceMemoryProperties memProperties = selectedDevice.getMemoryProperties();
 
@@ -99,60 +123,68 @@ int VulkanGpu::prepare() {
   vk::PipelineShaderStageCreateInfo shaderStageCreateInfo;
   shaderStageCreateInfo.stage = vk::ShaderStageFlagBits::eCompute;
 
-  const char *computeShaderCode = R"(
-#version 450
+    std::ifstream file("../compute_shader.spv", std::ios::ate | std::ios::binary);
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open SPIR-V file.");
+    }
 
-layout(set = 0, binding = 0) buffer inputBuffer {
-    uint data[];
-};
+    size_t fileSize = (size_t)file.tellg();
+    std::vector<uint32_t> shader_buffer(fileSize / sizeof(uint32_t));
 
-layout(set = 0, binding = 1) buffer outputBuffer {
-    uint result[];
-};
+    file.seekg(0);
+    file.read(reinterpret_cast<char*>(shader_buffer.data()), fileSize);
 
-void main() {
-    uint idx = gl_GlobalInvocationID.x;
-    result[idx] = data[idx] * 2;
-}
-)";
+    file.close();
 
-  shaderStageCreateInfo.module = (VkShaderModule) computeShaderCode /* todo Load your compute shader module */;
-  shaderStageCreateInfo.pName = "main";  // Entry point in your compute shader todo fails on memory
-  vk::ComputePipelineCreateInfo pipelineCreateInfo;
-  pipelineCreateInfo.stage = shaderStageCreateInfo;
-//  auto pipeline_ret = device.createComputePipeline(vk::PipelineCache(), pipelineCreateInfo);
-//  std::cout << pipeline_ret.result << std::endl;
-//  vk::Pipeline pipeline = pipeline_ret.value;
-//  // Create a Vulkan command buffer
-//  vk::CommandBufferAllocateInfo commandBufferAllocateInfo;
-//  commandBufferAllocateInfo.commandPool = commandPool;
-//  commandBufferAllocateInfo.level = vk::CommandBufferLevel::ePrimary;
-//  commandBufferAllocateInfo.commandBufferCount = 1;
-//  std::vector<vk::CommandBuffer> commandBuffers = device.allocateCommandBuffers(commandBufferAllocateInfo);
-//
-//  vk::CommandBuffer commandBuffer = commandBuffers[0];
-//
-//  // Record a command to execute the compute shader
-//  commandBuffer.begin(vk::CommandBufferBeginInfo());
-//  commandBuffer.bindPipeline(vk::PipelineBindPoint::eCompute, pipeline);
-//  commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eCompute, pipelineLayout, 0, descriptorSets, {});
-//  commandBuffer.dispatch(1, 1, 1);  // Set the number of work groups
-//  commandBuffer.end();
-//
-//  // Submit the command buffer for execution
-//  vk::Queue queue = device.getQueue(0, 0);  // Choose a suitable queue
-//  vk::SubmitInfo submitInfo;
-//  submitInfo.commandBufferCount = 1;
-//  submitInfo.pCommandBuffers = &commandBuffer;
-//  queue.submit(submitInfo, vk::Fence());
-//  queue.waitIdle();
+
+
+    // Create a shader module
+    vk::ShaderModuleCreateInfo createInfo({}, shader_buffer);
+
+    vk::ShaderModule shaderModule = device.createShaderModule(createInfo);
+
+    // Create a pipeline layout (not shown here)
+    // ...
+
+    // Create the compute pipeline
+    vk::ComputePipelineCreateInfo pipelineInfo({}, {}, pipelineLayout, nullptr, -1);
+    pipelineInfo.stage.stage = vk::ShaderStageFlagBits::eCompute;
+    pipelineInfo.stage.module = shaderModule;
+    pipelineInfo.stage.pName = "main";
+
+    auto pipeline_ret = device.createComputePipeline({}, pipelineInfo);
+
+  std::cout << pipeline_ret.result << std::endl;
+  vk::Pipeline pipeline = pipeline_ret.value;
+  // Create a Vulkan command buffer
+  vk::CommandBufferAllocateInfo commandBufferAllocateInfo;
+  commandBufferAllocateInfo.commandPool = commandPool;
+  commandBufferAllocateInfo.level = vk::CommandBufferLevel::ePrimary;
+  commandBufferAllocateInfo.commandBufferCount = 1;
+  std::vector<vk::CommandBuffer> commandBuffers = device.allocateCommandBuffers(commandBufferAllocateInfo);
+
+  vk::CommandBuffer commandBuffer = commandBuffers[0];
+
+  // Record a command to execute the compute shader
+  commandBuffer.begin(vk::CommandBufferBeginInfo());
+  commandBuffer.bindPipeline(vk::PipelineBindPoint::eCompute, pipeline);
+  commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eCompute, pipelineLayout, 0, descriptorSets, {});
+  commandBuffer.dispatch(1, 1, 1);  // Set the number of work groups
+  commandBuffer.end();
+
+  // Submit the command buffer for execution
+  vk::Queue queue = device.getQueue(0, 0);  // Choose a suitable queue
+  vk::SubmitInfo submitInfo;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &commandBuffer;
+  queue.submit(submitInfo, vk::Fence());
+  queue.waitIdle();
 
   // Clean up Vulkan resources
   device.freeDescriptorSets(descriptorPool, descriptorSets);
   device.destroyDescriptorPool(descriptorPool);
-//  device.destroyPipeline(pipeline);
+  device.destroyPipeline(pipeline);
   device.destroyPipelineLayout(pipelineLayout);
   device.destroyDescriptorSetLayout(descriptorSetLayout);
   device.freeMemory(bufferMemory);

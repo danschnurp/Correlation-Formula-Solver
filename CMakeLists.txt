@@ -20,7 +20,8 @@ set(target_sources
         VulkanGpu.cpp VulkanGpu.h
         preprocessing/utils.cpp preprocessing/utils.h
         genetic_alg/Node.cpp genetic_alg/Node.h
-        genetic_alg/Equation.cpp genetic_alg/Equation.h src/genetic_alg/Population.cpp src/genetic_alg/Population.h)
+        genetic_alg/Equation.cpp genetic_alg/Equation.h
+        genetic_alg/Population.cpp genetic_alg/Population.h)
 
 list(TRANSFORM target_sources PREPEND "src/")
 

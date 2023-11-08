@@ -1,0 +1,14 @@
+#version 450
+
+layout(set = 0, binding = 0) buffer InputBuffer {
+    int input_data[];
+};
+
+layout(set = 0, binding = 1) buffer OutputBuffer {
+    int output_data[];
+};
+
+void main() {
+    uint globalIdx = gl_GlobalInvocationID.x;
+    output_data[globalIdx] = input_data[globalIdx] * 2;
+}
