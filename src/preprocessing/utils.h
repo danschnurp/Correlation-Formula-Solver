@@ -8,7 +8,7 @@
 #include "../io/RecordACC.h"
 #include <vector>
 
-void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
+void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 
 /**
  * The normalize function takes a vector of doubles, calculates the mean and standard deviation, and then normalizes the

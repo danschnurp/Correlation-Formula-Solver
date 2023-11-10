@@ -30,10 +30,12 @@ int main(int argc, char **argv) {
       auto end_time = std::chrono::high_resolution_clock::now();
       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
       std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes" << std::endl;
+        std::cout << "loaded hr " << data.second->x.size() << std::endl;
       std::cout << "loaded acc " << data.first->x.size() << std::endl;
-      std::cout << "loaded hr " << data.second->x.size() << std::endl;
 
       normalize_data(data);
+      remove_redundant(data);
+      std::cout << "clean acc " << data.first->x.size() << std::endl;
 
     }
     catch (std::exception &err) {
