@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 
       auto start_time = std::chrono::high_resolution_clock::now();
       std::string hr_filename = "../data/HR_007.csv";
-      std::string acc_filename = "../data/ACC_007.csv";
+      std::string acc_filename = "../data/ACC_007_cleared.csv";
 
       auto data = load_data(hr_filename, acc_filename, load_sequential);
 
@@ -29,15 +29,29 @@ int main(int argc, char **argv) {
       }
       auto end_time = std::chrono::high_resolution_clock::now();
       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-      std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes" << std::endl;
+        std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
+                  << duration.count() / 1000 % 60 << " seconds" << std::endl;
         std::cout << "loaded hr " << data.second->x.size() << std::endl;
       std::cout << "loaded acc " << data.first->x.size() << std::endl;
-
-      normalize_data(data);
-      remove_redundant(data);
-      save_cleared_ACC_data("../data/ACC_007_cleared.csv", data.first);
+        start_time = std::chrono::high_resolution_clock::now();
+        if (acc_filename.find("_cleared.csv") == std::string::npos) {
+            normalize(data.first->x);
+            normalize(data.first->y);
+            normalize(data.first->z);
+        }
+        normalize(data.second->x);
+        if (acc_filename.find("_cleared.csv") == std::string::npos) {
+            remove_redundant(data);
+            save_cleared_ACC_data("../data/ACC_007_cleared.csv", data.first);
+        }
       std::cout << "clean acc " << data.first->x.size() << std::endl;
-      std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes" << std::endl;
+        end_time = std::chrono::high_resolution_clock::now();
+        duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
+        << duration.count() / 1000 % 60 << " seconds" << std::endl;
+
+
+
     }
     catch (std::exception &err) {
       std::cerr << std::endl << err.what() << std::endl;

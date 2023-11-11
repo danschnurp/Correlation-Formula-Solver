@@ -16,7 +16,7 @@ void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Reco
  * data by subtracting the mean and dividing by the standard deviation, and then scales the data to a range of 0 to 1.
  * for ACC: x, y, z and HR: x
  */
-void normalize_data(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
+void normalize(std::vector<double> &data);
 
 
 

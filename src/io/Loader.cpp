@@ -60,6 +60,8 @@ std::shared_ptr<RecordHR> DataGodLoader::load_HR_data(const std::string &input_p
     ss >> std::get_time(&timeinfo, "%Y-%m-%d %H:%M:%S");
     ss.ignore(); // Ignore the comma (,)
     ss >> x;
+    timeinfo.tm_year += 1900;
+    timeinfo.tm_mon += 1;
     data->timestamp.emplace_back(timeinfo);
     data->x.emplace_back(x);
   }
@@ -87,6 +89,7 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
     ss.ignore(); // Ignore the comma (,)
     ss >> z;
     timeinfo.tm_year += 1900;
+    timeinfo.tm_mon += 1;
     data->timestamp.emplace_back(timeinfo);
     data->microsecond.emplace_back(microsecond);
     data->x.emplace_back(x);
@@ -101,7 +104,7 @@ void save_cleared_ACC_data(const std::string &output_path, const std::shared_ptr
   std::ofstream file;
   file.open(output_path, std::ios::binary);
   if (!file.is_open()) throw std::runtime_error{"ACC_xxx.csv not found..."};
-
+  file << "datetime, acc_x, acc_y, acc_z" << std::endl;
   for (int i = 0; i < data->x.size(); ++i) {
     file << data->timestamp[i].tm_year;
     file << "-";
