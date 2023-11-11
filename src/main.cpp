@@ -35,8 +35,9 @@ int main(int argc, char **argv) {
 
       normalize_data(data);
       remove_redundant(data);
+      save_cleared_ACC_data("../data/ACC_007_cleared.csv", data.first);
       std::cout << "clean acc " << data.first->x.size() << std::endl;
-
+      std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes" << std::endl;
     }
     catch (std::exception &err) {
       std::cerr << std::endl << err.what() << std::endl;

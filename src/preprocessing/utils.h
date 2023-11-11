@@ -7,6 +7,7 @@
 #include "../io/RecordHR.h"
 #include "../io/RecordACC.h"
 #include <vector>
+#include <chrono>
 
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 

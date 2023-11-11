@@ -28,6 +28,8 @@
 std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
     std::string &hr_filename, std::string &acc_filename, bool load_sequential);
 
+void save_cleared_ACC_data(const std::string &output_path, const std::shared_ptr<RecordACC> &data);
+
 class DataGodLoader {
 private:
     std::string line;

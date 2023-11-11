@@ -86,6 +86,7 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
     ss >> y;
     ss.ignore(); // Ignore the comma (,)
     ss >> z;
+    timeinfo.tm_year += 1900;
     data->timestamp.emplace_back(timeinfo);
     data->microsecond.emplace_back(microsecond);
     data->x.emplace_back(x);
@@ -94,4 +95,38 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
   }
   file.close();
   return data;
+}
+
+void save_cleared_ACC_data(const std::string &output_path, const std::shared_ptr<RecordACC> &data) {
+  std::ofstream file;
+  file.open(output_path, std::ios::binary);
+  if (!file.is_open()) throw std::runtime_error{"ACC_xxx.csv not found..."};
+
+  for (int i = 0; i < data->x.size(); ++i) {
+    file << data->timestamp[i].tm_year;
+    file << "-";
+    file << data->timestamp[i].tm_mon;
+    file << "-";
+    file << data->timestamp[i].tm_mday;
+    file << " ";
+    file << data->timestamp[i].tm_hour;
+    file << ":";
+    file << data->timestamp[i].tm_min;
+    file << ":";
+    file << data->timestamp[i].tm_sec;
+    file << ".";
+    file << data->microsecond[i];
+    file << ",";
+    file << data->x[i];
+    file << ",";
+    file << data->y[i];
+    file << ",";
+    file << data->z[i];
+    file << std::endl;
+  }
+
+  file.close();
+
+//  std::cout << "saved "
+
 }
