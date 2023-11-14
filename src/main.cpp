@@ -6,6 +6,8 @@
 #include <thread>
 #include <iostream>
 #include "VulkanGpu.h"
+#include "genetic_alg/Population.h"
+#include <memory>
 
 int main(int argc, char **argv) {
   auto gpu_comp_unit = std::make_unique<VulkanGpu>();
@@ -49,6 +51,15 @@ int main(int argc, char **argv) {
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
         std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
         << duration.count() / 1000 % 60 << " seconds" << std::endl;
+
+        Population  population{};
+
+        std::cout << population;
+
+        for (int i = 0; i < population.populationSize; ++i) {
+            double_t result = population.equations[i]->evaluate(0.5, 0.5, 0.5);
+            std::cout << "evaluation for x 1: " << result << std::endl;
+        }
 
 
 

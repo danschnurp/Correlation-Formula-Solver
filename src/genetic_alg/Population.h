@@ -6,10 +6,15 @@
 #define PPR_POPULATION_H
 #include <array>
 #include "Equation.h"
+#include <memory>
+#include <ostream>
 
 class Population {
-
-    std::array<Equation, 50> equations;
+public:
+    int populationSize = 200;
+    std::array<std::shared_ptr<Equation>, 200> equations;
+    Population();
+    friend std::ostream &operator<<(std::ostream &os, const Population &population);
 
 };
 
