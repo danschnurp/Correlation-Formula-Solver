@@ -7,6 +7,38 @@
 #include <cmath>
 
 
+void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+
+    int interpolate_counter = 0;
+    std::tm curr = data.first->timestamp[0];
+    std::vector<double> interpolated;
+    int hr_counter = 0;
+
+    for (std::tm &i: data.first->timestamp) {
+
+        if (i.tm_year == curr.tm_year && i.tm_mon == curr.tm_mon && i.tm_mday == curr.tm_mday &&
+        i.tm_hour == curr.tm_hour && i.tm_min == curr.tm_min && i.tm_sec == curr.tm_sec) {
+            interpolate_counter++;
+        }
+        else {
+            double start = data.second->x[hr_counter];
+            hr_counter++;
+            double end = data.second->x[hr_counter];
+            double step = (end - start) / (interpolate_counter + 1);
+
+            for (int j = 0; j < interpolate_counter + 1; ++j) {
+                interpolated.emplace_back(start + j * step);
+            }
+            hr_counter++;
+            interpolate_counter = 0;
+            curr = i;
+        }
+    }
+    data.second->x = interpolated;
+    if (data.second->x.size() != data.first->x.size())
+        throw std::runtime_error{"bad computation!!!"};
+}
+
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
 
     int hr_counter = 0;

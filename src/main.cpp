@@ -36,16 +36,22 @@ int main(int argc, char **argv) {
         std::cout << "loaded hr " << data.second->x.size() << std::endl;
       std::cout << "loaded acc " << data.first->x.size() << std::endl;
         start_time = std::chrono::high_resolution_clock::now();
+
         if (acc_filename.find("_cleared.csv") == std::string::npos) {
             normalize(data.first->x);
             normalize(data.first->y);
             normalize(data.first->z);
         }
+
         normalize(data.second->x);
+
         if (acc_filename.find("_cleared.csv") == std::string::npos) {
             remove_redundant(data);
             save_cleared_ACC_data("../data/ACC_007_cleared.csv", data.first);
         }
+
+        interpolate(data);
+
       std::cout << "clean acc " << data.first->x.size() << std::endl;
         end_time = std::chrono::high_resolution_clock::now();
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
