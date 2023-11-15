@@ -9,9 +9,19 @@
 #include <vector>
 #include <chrono>
 
+
+
+
+/**
+ * The function "interpolate" takes in a pair of shared pointers to RecordACC and RecordHR objects, and interpolates the
+ * values in the RecordHR object based on the timestamps in the RecordACC object.
+ */
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 
-
+/**
+ * The function `remove_redundant` removes redundant data from `RecordACC`
+ * object.
+ */
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 
 /**

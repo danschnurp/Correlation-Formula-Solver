@@ -8,12 +8,12 @@
 
 
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
-
     int interpolate_counter = 0;
     std::tm curr = data.first->timestamp[0];
     std::vector<double> interpolated;
     int hr_counter = 0;
-
+    double start;
+    double step;
     for (std::tm &i: data.first->timestamp) {
 
         if (i.tm_year == curr.tm_year && i.tm_mon == curr.tm_mon && i.tm_mday == curr.tm_mday &&
@@ -21,11 +21,9 @@ void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>
             interpolate_counter++;
         }
         else {
-            double start = data.second->x[hr_counter];
+            start = data.second->x[hr_counter];
             hr_counter++;
-            double end = data.second->x[hr_counter];
-            double step = (end - start) / (interpolate_counter + 1);
-
+            step = (data.second->x[hr_counter] - start) / (interpolate_counter + 1);
             for (int j = 0; j < interpolate_counter + 1; ++j) {
                 interpolated.emplace_back(start + j * step);
             }
