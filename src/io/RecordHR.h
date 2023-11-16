@@ -12,7 +12,7 @@ class RecordHR {
 public:
     RecordHR();
 
-    std::vector<double> x;
+    std::vector<float> x;
     std::vector<std::tm> timestamp;
 };
 

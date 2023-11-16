@@ -25,11 +25,11 @@ void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 
 /**
- * The normalize function takes a vector of doubles, calculates the mean and standard deviation, and then normalizes the
+ * The normalize function takes a vector of floats, calculates the mean and standard deviation, and then normalizes the
  * data by subtracting the mean and dividing by the standard deviation, and then scales the data to a range of 0 to 1.
  * for ACC: x, y, z and HR: x
  */
-void normalize(std::vector<double> &data);
+void normalize(std::vector<float> &data);
 
 
 

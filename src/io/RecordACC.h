@@ -11,10 +11,10 @@ class RecordACC {
 public:
     RecordACC();
 
-    std::vector<double> microsecond;
-    std::vector<double> y;
-    std::vector<double> z;
-    std::vector<double> x;
+    std::vector<float> microsecond;
+    std::vector<float> y;
+    std::vector<float> z;
+    std::vector<float> x;
     std::vector<std::tm> timestamp;
 
 

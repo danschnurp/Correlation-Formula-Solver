@@ -5,9 +5,11 @@
 #ifndef PPR_SRC_VULKANGPU_H_
 #define PPR_SRC_VULKANGPU_H_
 
+#include <vector>
+
 class VulkanGpu {
  public:
-  int prepare();
+    float compute_correlation(  const std::vector<float>& dataArray_x, const std::vector<float>& dataArray_y);
 
 };
 

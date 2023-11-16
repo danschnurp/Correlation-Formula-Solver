@@ -34,7 +34,7 @@ class DataGodLoader {
 private:
     std::string line;
   int microsecond;
-    double x, y, z;
+    float x, y, z;
 
     std::istringstream ss;
     std::tm timeinfo{};

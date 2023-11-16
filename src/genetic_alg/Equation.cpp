@@ -11,18 +11,18 @@ Equation::Equation() {
 
     // coefficients are in interval -2, 2
     auto result = compute_mean_std(-2.0, 2.0);
-    std::normal_distribution<double> normal_dist_values(result.first, result.second);
+    std::normal_distribution<float> normal_dist_values(result.first, result.second);
     root = normal_dist_values(e2);
 
     // length of equation is 3 - 7
     result = compute_mean_std(3.0, 7);
-    std::normal_distribution<double> normal_dist_len(result.first, result.second);
+    std::normal_distribution<float> normal_dist_len(result.first, result.second);
     for (int i = 0; i < static_cast<int>(round(normal_dist_len(e2))); ++i) {
         nodes.emplace_back();
     }
 }
 
-double_t determine_xyz(int xyz, double_t x, double_t y, double_t z) {
+float_t determine_xyz(int xyz, float_t x, float_t y, float_t z) {
     switch (xyz) {
         case X:
             return x;
@@ -35,9 +35,9 @@ double_t determine_xyz(int xyz, double_t x, double_t y, double_t z) {
 }
 
 
-double_t Equation::evaluate(double_t x, double_t y, double_t z) {
-    double_t result = root;
-    double_t xyz;
+float_t Equation::evaluate(float_t x, float_t y, float_t z) {
+    float_t result = root;
+    float_t xyz;
     for (const auto &i: nodes) {
         switch (i.operand) {
             case plus:

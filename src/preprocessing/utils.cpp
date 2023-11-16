@@ -10,10 +10,10 @@
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
     int interpolate_counter = 0;
     std::tm curr = data.first->timestamp[0];
-    std::vector<double> interpolated;
+    std::vector<float> interpolated;
     int hr_counter = 0;
-    double start;
-    double step;
+    float start;
+    float step;
     for (std::tm &i: data.first->timestamp) {
 
         if (i.tm_year == curr.tm_year && i.tm_mon == curr.tm_mon && i.tm_mday == curr.tm_mday &&
@@ -75,10 +75,10 @@ void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Reco
             max_tm.tm_mon = std::numeric_limits<int>::max();
             max_tm.tm_year = std::numeric_limits<int>::max();
             data.first->timestamp[i] = max_tm;
-            data.first->x[i] = std::numeric_limits<double>::max();
-            data.first->y[i] = std::numeric_limits<double>::max();
-            data.first->z[i] = std::numeric_limits<double>::max();
-            data.first->microsecond[i] = std::numeric_limits<double>::max();
+            data.first->x[i] = std::numeric_limits<float>::max();
+            data.first->y[i] = std::numeric_limits<float>::max();
+            data.first->z[i] = std::numeric_limits<float>::max();
+            data.first->microsecond[i] = std::numeric_limits<float>::max();
        }
     }
 
@@ -92,46 +92,46 @@ void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Reco
           value.tm_sec == max_tm1.tm_sec;
     });
 
-    std::erase_if(data.first->x, [&](double value) {
-        return value == std::numeric_limits<double>::max();});
-    std::erase_if(data.first->y, [&](double value) {
-        return value == std::numeric_limits<double>::max();});
-    std::erase_if(data.first->z, [&](double value) {
-        return value == std::numeric_limits<double>::max();});
-    std::erase_if(data.first->microsecond, [&](double value) {
-        return value == std::numeric_limits<double>::max();});
+    std::erase_if(data.first->x, [&](float value) {
+        return value == std::numeric_limits<float>::max();});
+    std::erase_if(data.first->y, [&](float value) {
+        return value == std::numeric_limits<float>::max();});
+    std::erase_if(data.first->z, [&](float value) {
+        return value == std::numeric_limits<float>::max();});
+    std::erase_if(data.first->microsecond, [&](float value) {
+        return value == std::numeric_limits<float>::max();});
 
 }
 
 
-double calculateMean(const std::vector<double> &data) {
-    double sum = 0.0;
-    for (const double &value : data) {
+float calculateMean(const std::vector<float> &data) {
+    float sum = 0.0;
+    for (const float &value : data) {
         sum += value;
     }
     return sum / data.size();
 }
 
 
-double calculateStandardDeviation(const std::vector<double> &data, double mean) {
-    double sum = 0.0;
-    for (const double &value : data) {
+float calculateStandardDeviation(const std::vector<float> &data, float mean) {
+    float sum = 0.0;
+    for (const float &value : data) {
         sum += std::pow(value - mean, 2);
     }
     return std::sqrt(sum / data.size());
 }
 
-void normalize(std::vector<double> &data) {
-    double mean = calculateMean(data);
-    double stddev = calculateStandardDeviation(data, mean);
+void normalize(std::vector<float> &data) {
+    float mean = calculateMean(data);
+    float stddev = calculateStandardDeviation(data, mean);
 
     for (auto &i: data) {
         i = (i - mean) / stddev;
     }
 
-    double min_val = *std::min_element(data.begin(), data.end());
-    double max_val = *std::max_element(data.begin(), data.end());
-    for (double& value : data) {
+    float min_val = *std::min_element(data.begin(), data.end());
+    float max_val = *std::max_element(data.begin(), data.end());
+    for (float& value : data) {
         value = (value - min_val) / (max_val - min_val);
     }
 }

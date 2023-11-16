@@ -8,15 +8,15 @@
 #include <string>
 #include <random>
 
-std::pair<double, double> compute_mean_std(double interval_start, double interval_end);
+std::pair<float, float> compute_mean_std(float interval_start, float interval_end);
 
 /**
- * The Node constructor initializes the operand with a random integer and the value with a random double using a normal
+ * The Node constructor initializes the operand with a random integer and the value with a random float using a normal
  * distribution.
  */
 class Node {
 public:
-    double value;
+    float value;
     int operand;
     int xyz;
 

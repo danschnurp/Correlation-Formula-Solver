@@ -21,7 +21,7 @@ enum XYZ {
 
 class Equation {
 public:
-    double root;
+    float root;
     std::vector<Node> nodes;
 
     Equation();
@@ -38,7 +38,7 @@ public:
      *
      * @return the result of evaluating the equation using the given values of x, y, and z.
      */
-    double_t  evaluate(double_t x, double_t y, double_t z);
+    float_t  evaluate(float_t x, float_t y, float_t z);
 
 };
 

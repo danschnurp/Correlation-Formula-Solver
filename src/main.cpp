@@ -8,7 +8,42 @@
 #include "VulkanGpu.h"
 #include "genetic_alg/Population.h"
 #include <memory>
+#include <cmath>
 
+float mean(const std::vector<float>& data) {
+    float sum = 0.0;
+    for (const float& value : data) {
+        sum += value;
+    }
+    return sum / data.size();
+}
+
+float pearsonCorrelation(const std::vector<float>& x, const std::vector<float>& y) {
+    // Check if the vectors have the same size
+    if (x.size() != y.size()) {
+        throw std::invalid_argument("Input vectors must have the same size");
+    }
+
+    // Calculate means
+    float meanX = mean(x);
+    float meanY = mean(y);
+
+    // Calculate covariance and variances
+    float covXY = 0.0;
+    float varX = 0.0;
+    float varY = 0.0;
+
+    for (size_t i = 0; i < x.size(); ++i) {
+        covXY += (x[i] - meanX) * (y[i] - meanY);
+        varX += std::pow(x[i] - meanX, 2);
+        varY += std::pow(y[i] - meanY, 2);
+    }
+
+    // Calculate Pearson correlation coefficient
+    float correlation = covXY / (std::sqrt(varX) * std::sqrt(varY));
+
+    return correlation;
+}
 
 /**
  * The preprocess function normalizes and processes accelerometer and heart rate data, removes redundant data, and saves
@@ -36,8 +71,6 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
 }
 
 int main(int argc, char **argv) {
-  auto gpu_comp_unit = std::make_unique<VulkanGpu>();
-  gpu_comp_unit->prepare();
     try {
 
       std::cout << "starting... " << std::endl;
@@ -80,11 +113,26 @@ int main(int argc, char **argv) {
 // test code
 //        std::cout << population;
 //
-//        for (int i = 0; i < population.populationSize; ++i) {
-//            double_t result = population.equations[i]->evaluate(0.5, 0.5, 0.5);
+//        for (int i = 0; i < population->populationSize; ++i) {
+//            float_t result = population->equations[i]->evaluate(0.5, 0.5, 0.5);
 //            std::cout << "evaluation for x 1: " << result << std::endl;
 //        }
 
+
+//        for (int j = 0; j < population->populationSize; ++j) {
+//            for (int i = 0; i < data.first->x.size(); ++i) {
+//                population->equations[j]->evaluate(data.first->x[i], data.first->y[i],
+//                                                   data.first->z[i]);
+//
+//            }
+//        }
+
+
+        auto gpu_comp_unit = std::make_unique<VulkanGpu>();
+        float corr = gpu_comp_unit->compute_correlation(data.first->x, data.second->x);
+        std::cout << corr << std::endl;
+        float correlation = pearsonCorrelation(data.first->x, data.second->x);
+        std::cout << correlation << std::endl;
 
     }
     catch (std::exception &err) {
