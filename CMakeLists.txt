@@ -1,23 +1,34 @@
-cmake_minimum_required(VERSION 3.22)
-
+cmake_minimum_required(VERSION 3.8)
+set(CMAKE_CXX_STANDARD 20)
+if (APPLE)
+    set(CMAKE_OSX_ARCHITECTURES x86_64)
+    set(PKG_CONFIG_PATH "/usr/local/opt/opencl-clhpp-headers/share/pkgconfig")
+    set(CPPFLAGS "-I/usr/local/opt/opencl-clhpp-headers/include")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -framework OpenCL")
+else ()
+    set(OpenCL_LIBRARY OpenCL-SDK/lib)
+    set(OpenCL_INCLUDE_DIR OpenCL-SDK/include)
+    link_directories(OpenCL-SDK/lib)
+    include_directories(OpenCL-SDK/include)
+endif (APPLE)
 
 project(ppr)
 
 set(CMAKE_CXX_STANDARD 20)
 
+find_package(OpenCL REQUIRED)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES YES)
-# find Vulkan SDK
-find_package( Vulkan REQUIRED )
+## find Vulkan SDK
+#find_package( Vulkan REQUIRED )
 
-include_directories(${VULKAN_SDK}/Inlude)
 
 set(target_sources
         main.cpp
         io/RecordHR.h io/RecordHR.cpp
         io/RecordACC.h io/RecordACC.cpp
         io/Loader.h io/Loader.cpp
-        VulkanGpu.cpp VulkanGpu.h
+        gpu/OpenclGPU.h gpu/OpenclGPU.cpp
         preprocessing/utils.cpp preprocessing/utils.h
         genetic_alg/Node.cpp genetic_alg/Node.h
         genetic_alg/Equation.cpp genetic_alg/Equation.h
@@ -25,6 +36,18 @@ set(target_sources
 
 list(TRANSFORM target_sources PREPEND "src/")
 
-# link Vulkan C++ module into your project
+
 add_executable(${PROJECT_NAME} ${target_sources})
-target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
+
+#target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
+
+if (APPLE)
+    # Include OpenCL headers
+    target_include_directories(${PROJECT_NAME} PRIVATE ${OpenCL_INCLUDE_DIRS})
+
+    # Link against OpenCL library
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCL_LIBRARIES})
+else (
+)
+    target_link_libraries(ppr PRIVATE OpenCL)
+endif (APPLE)

@@ -5,8 +5,8 @@
 #include "preprocessing/utils.h"
 #include <thread>
 #include <iostream>
-#include "VulkanGpu.h"
 #include "genetic_alg/Population.h"
+#include "gpu/OpenclGPU.h"
 #include <memory>
 #include <cmath>
 
@@ -71,6 +71,10 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
 }
 
 int main(int argc, char **argv) {
+
+    auto open_cl = std::make_unique<OpenclGPU>();
+    open_cl->test();
+
     try {
 
       std::cout << "starting... " << std::endl;
@@ -128,11 +132,12 @@ int main(int argc, char **argv) {
 //        }
 
 
-        auto gpu_comp_unit = std::make_unique<VulkanGpu>();
-        float corr = gpu_comp_unit->compute_correlation(data.first->x, data.second->x);
-        std::cout << corr << std::endl;
-        float correlation = pearsonCorrelation(data.first->x, data.second->x);
-        std::cout << correlation << std::endl;
+// VULKAN...
+//        auto gpu_comp_unit = std::make_unique<VulkanGpu>();
+//        float corr = gpu_comp_unit->compute_correlation(data.first->x, data.second->x);
+//        std::cout << corr << std::endl;
+//        float correlation = pearsonCorrelation(data.first->x, data.second->x);
+//        std::cout << correlation << std::endl;
 
     }
     catch (std::exception &err) {
