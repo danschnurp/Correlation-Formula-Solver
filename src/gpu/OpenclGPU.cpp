@@ -1,7 +1,3 @@
-//
-// Created by Dan Schnurpfeil on 16.11.2023.
-//
-
 #include "OpenclGPU.h"
 
 //

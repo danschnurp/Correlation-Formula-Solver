@@ -37,3 +37,6 @@
 .DS_Store
 *.workspace
 /kiv-ppr.xcworkspace/
+
+saxpy.spv
+compute_shader.spv

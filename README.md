@@ -2,10 +2,11 @@
 
 ### Prerequisites
 
-- [VulkanSDK-1.3.268.0](https://vulkan.lunarg.com/sdk/home)
-- ninja
-- [llvm 17.0.1](https://github.com/llvm/llvm-project/releases/tag/llvmorg-17.0.1)
-- cmake
+- [VulkanSDK-1.3.268.0](https://vulkan.lunarg.com/sdk/home) (install via cmd in
+  Windows (`VulkanSDK-1.2.182.1-Installer.exe --accept-licenses --default-answer --confirm-command install com.lunarg.vulkan.32bit com.lunarg.vulkan.sdl2 com.lunarg.vulkan.glm com.lunarg.vulkan.volk com.lunarg.vulkan.vma com.lunarg.vulkan.debug com.lunarg.vulkan.debug32`))
+- compile shaders
+- `glslc src/shaders/saxpy.comp -o src/shaders/saxpy.spv`
+- `glslc src/shaders/compute_shader.comp -o src/shaders/compute_shader.spv`
 
 make sure you are loading with 64bit
 

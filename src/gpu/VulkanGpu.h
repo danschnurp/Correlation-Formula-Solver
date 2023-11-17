@@ -9,7 +9,8 @@
 
 class VulkanGpu {
  public:
-    float compute_correlation(  const std::vector<float>& dataArray_x, const std::vector<float>& dataArray_y);
+
+  float compute_correlation(  const std::vector<float>& dataArray_x, const std::vector<float>& dataArray_y);
 
 };
 

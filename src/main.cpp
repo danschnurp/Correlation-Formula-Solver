@@ -6,16 +6,17 @@
 #include <thread>
 #include <iostream>
 #include "genetic_alg/Population.h"
-#include "gpu/OpenclGPU.h"
+#include "gpu/VulkanGpu.h"
+#include "gpu/demo/Demo.h"
 #include <memory>
 #include <cmath>
 
-float mean(const std::vector<float>& data) {
-    float sum = 0.0;
-    for (const float& value : data) {
-        sum += value;
-    }
-    return sum / data.size();
+float mean(const std::vector<float> &data) {
+  float sum = 0.0;
+  for (const float &value : data) {
+    sum += value;
+  }
+  return sum / data.size();
 }
 
 float pearsonCorrelation(const std::vector<float>& x, const std::vector<float>& y) {
@@ -72,17 +73,18 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
 
 int main(int argc, char **argv) {
 
-    auto open_cl = std::make_unique<OpenclGPU>();
-    open_cl->test();
+  test_demo();
 
-    try {
+  auto gpu_comp_unit = std::make_unique<VulkanGpu>();
 
-      std::cout << "starting... " << std::endl;
-      bool load_sequential = false;
+  try {
 
-      auto start_time = std::chrono::high_resolution_clock::now();
-      std::string hr_filename = "../data/HR_007.csv";
-      std::string acc_filename = "../data/ACC_007_cleared.csv";
+    std::cout << "starting... " << std::endl;
+    bool load_sequential = false;
+
+    auto start_time = std::chrono::high_resolution_clock::now();
+    std::string hr_filename = "../data/HR_007.csv";
+    std::string acc_filename = "../data/ACC_007_cleared.csv";
 
       auto data = load_data(hr_filename, acc_filename, load_sequential);
 
@@ -133,7 +135,7 @@ int main(int argc, char **argv) {
 
 
 // VULKAN...
-//        auto gpu_comp_unit = std::make_unique<VulkanGpu>();
+
 //        float corr = gpu_comp_unit->compute_correlation(data.first->x, data.second->x);
 //        std::cout << corr << std::endl;
 //        float correlation = pearsonCorrelation(data.first->x, data.second->x);
