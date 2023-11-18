@@ -10,11 +10,12 @@
 #include <ostream>
 
 class Population {
-public:
-    int populationSize = 200;
-    std::array<std::shared_ptr<Equation>, 200> equations;
-    Population();
-    friend std::ostream &operator<<(std::ostream &os, const Population &population);
+ public:
+  int populationSize = 200;
+  std::vector<float> fitness;
+  std::vector<std::shared_ptr<Equation>> equations;
+  Population();
+  friend std::ostream &operator<<(std::ostream &os, const Population &population);
 
 };
 

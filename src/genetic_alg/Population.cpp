@@ -7,7 +7,7 @@
 
 Population::Population() {
     for (int i = 0; i < populationSize; ++i) {
-        equations[i] = std::make_shared<Equation>();
+        equations.emplace_back(std::make_shared<Equation>());
     }
 }
 

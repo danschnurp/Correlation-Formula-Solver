@@ -44,18 +44,18 @@ float_t Equation::evaluate(float_t x, float_t y, float_t z) {
                 xyz = determine_xyz(i.xyz, x,y,z);
                 result += i.value * xyz;
                 break;
-            case minus:
-                xyz = determine_xyz(i.xyz, x,y,z);
-                result -= i.value * xyz;
-                break;
-            case multiply:
-                xyz = determine_xyz(i.xyz, x,y,z);
-                result *= i.value * xyz;
-                break;
-            case divide:
-                xyz = determine_xyz(i.xyz, x,y,z);
-                result /= i.value * xyz;
-                break;
+          case minus:xyz = determine_xyz(i.xyz, x, y, z);
+            result -= i.value * xyz;
+            break;
+          case multiply:xyz = determine_xyz(i.xyz, x, y, z);
+            result *= i.value * xyz;
+            break;
+          case divide:xyz = determine_xyz(i.xyz, x, y, z);
+            if (i.value * xyz == 0)
+              throw std::invalid_argument("result is zero... cant divide");
+            result /= i.value * xyz;
+            break;
+          default:result = root;
         }
     }
 

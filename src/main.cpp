@@ -19,17 +19,17 @@ float mean(const std::vector<float> &data) {
   return sum / data.size();
 }
 
-float pearsonCorrelation(const std::vector<float>& x, const std::vector<float>& y) {
-    // Check if the vectors have the same size
-    if (x.size() != y.size()) {
-        throw std::invalid_argument("Input vectors must have the same size");
-    }
+float pearsonCorrelationCPU(const std::vector<float> &x, const std::vector<float> &y) {
+  // Check if the vectors have the same size
+  if (x.size() != y.size()) {
+    throw std::invalid_argument("Input vectors must have the same size");
+  }
 
-    // Calculate means
-    float meanX = mean(x);
-    float meanY = mean(y);
+  // Calculate means
+  float meanX = mean(x);
+  float meanY = mean(y);
 
-    // Calculate covariance and variances
+  // Calculate covariance and variances
     float covXY = 0.0;
     float varX = 0.0;
     float varY = 0.0;
@@ -86,62 +86,63 @@ int main(int argc, char **argv) {
     std::string hr_filename = "../data/HR_007.csv";
     std::string acc_filename = "../data/ACC_007_cleared.csv";
 
-      auto data = load_data(hr_filename, acc_filename, load_sequential);
+    auto data = load_data(hr_filename, acc_filename, load_sequential);
 
-      if (data.first->x.empty()) {
-        return 1;
-      }
-      if (data.second->x.empty()) {
-        return 1;
-      }
-
-      auto end_time = std::chrono::high_resolution_clock::now();
-      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-        std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
-                  << duration.count() / 1000 % 60 << " seconds" << std::endl;
-
-//        std::cout << "loaded hr " << data.second->x.size() << std::endl;
-//      std::cout << "loaded acc " << data.first->x.size() << std::endl;
-
-        start_time = std::chrono::high_resolution_clock::now();
-        //  performing some preprocessing steps on the data before it is used further
-        preprocess(data, acc_filename);
-        //
-      std::cout << "clean acc " << data.first->x.size() << std::endl;
-        end_time = std::chrono::high_resolution_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-        std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
-        << duration.count() / 1000 % 60 << " seconds" << std::endl;
-
-        auto population = std::make_unique<Population>();
-//        todo some values are out fo range 0,1
-
-// test code
-//        std::cout << population;
-//
-//        for (int i = 0; i < population->populationSize; ++i) {
-//            float_t result = population->equations[i]->evaluate(0.5, 0.5, 0.5);
-//            std::cout << "evaluation for x 1: " << result << std::endl;
-//        }
-
-
-//        for (int j = 0; j < population->populationSize; ++j) {
-//            for (int i = 0; i < data.first->x.size(); ++i) {
-//                population->equations[j]->evaluate(data.first->x[i], data.first->y[i],
-//                                                   data.first->z[i]);
-//
-//            }
-//        }
-
-
-// VULKAN...
-
-//        float corr = gpu_comp_unit->compute_correlation(data.first->x, data.second->x);
-//        std::cout << corr << std::endl;
-//        float correlation = pearsonCorrelation(data.first->x, data.second->x);
-//        std::cout << correlation << std::endl;
-
+    if (data.first->x.empty()) {
+      return 1;
     }
+    if (data.second->x.empty()) {
+      return 1;
+    }
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
+              << duration.count() / 1000 % 60 << " seconds" << std::endl;
+
+    std::cout << "loaded hr " << data.second->x.size() << std::endl;
+    std::cout << "loaded acc " << data.first->x.size() << std::endl;
+
+    start_time = std::chrono::high_resolution_clock::now();
+    //  performing some preprocessing steps on the data before it is used further
+    preprocess(data, acc_filename);
+
+    std::cout << "clean acc " << data.first->x.size() << std::endl;
+    end_time = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
+              << duration.count() / 1000 % 60 << " seconds" << std::endl;
+
+    start_time = std::chrono::high_resolution_clock::now();
+    auto population = std::make_unique<Population>();
+    std::vector<std::shared_ptr<Equation>> new_equations;
+    std::vector<float> population_results;
+    std::vector<float> equation_results;
+    for (int i = 0; i < population->populationSize; ++i) {
+      try {
+        for (int j = 0; j < data.first->x.size(); ++j) {
+          equation_results.emplace_back(population->equations[i]->evaluate(data.first->x[j],
+                                                                           data.first->y[j],
+                                                                           data.first->z[j]));
+        }
+        new_equations.push_back(population->equations[i]);
+        float corr = pearsonCorrelationCPU(equation_results, data.second->x);
+        population_results.emplace_back(corr);
+        equation_results.clear();
+      }
+      catch (std::invalid_argument &ex) {
+        std::cerr << std::endl << ex.what() << std::endl;
+        equation_results.clear();
+        continue;
+      }
+    }
+    end_time = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
+              << duration.count() / 1000 % 60 << " seconds" << std::endl;
+    for (const auto &item : population_results) std::cout << item << " ";
+
+  }
     catch (std::exception &err) {
       std::cerr << std::endl << err.what() << std::endl;
       return 1;
