@@ -39,4 +39,4 @@
 /kiv-ppr.xcworkspace/
 
 saxpy.spv
-compute_shader.spv
+*.spv

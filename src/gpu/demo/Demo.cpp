@@ -15,7 +15,7 @@ void test_demo() {
   auto y = std::vector<float>(width * height, 0.71f);
   auto x = std::vector<float>(width * height, 0.65f);
 
-  std::cout << "demo: result = 2 * 0.65 + 0.71 ...should be 2.01" << std::endl;
+  std::cout << "VULKAN correctness demo: result = 2 * 0.65 + 0.71 ...should be 2.01" << std::endl;
 
   ExampleFilter f("../saxpy.spv");
   auto d_y = vuh::Array<float>::fromHost(y, f.device, f.physDevice);

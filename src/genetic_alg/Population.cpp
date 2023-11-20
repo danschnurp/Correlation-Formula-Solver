@@ -4,12 +4,17 @@
 
 
 #include "Population.h"
+#include "../gpu/demo/vulkan_helpers.hpp"
 #include <iostream>
 
 Population::Population() {
     for (int i = 0; i < populationSize; ++i) {
         equations.emplace_back(Equation());
     }
+    fPlus = std::make_unique<ExampleFilter>("../plus.spv");
+    fMinus = std::make_unique<ExampleFilter>("../minus.spv");
+    fMultiply = std::make_unique<ExampleFilter>("../multiply.spv");
+    fDivide = std::make_unique<ExampleFilter>("../divide.spv");
 }
 
 std::ostream &operator<<(std::ostream &os, const Population &population) {
@@ -54,4 +59,97 @@ std::vector<Equation> Population::crossbreed() {
         }
     }
     return children;
+}
+
+float mean(const std::vector<float> &data) {
+    float sum = 0.0;
+    for (const float &value : data) {
+        sum += value;
+    }
+    return sum / data.size();
+}
+
+
+
+float Population::countFitFunction(const std::vector<float> &x) {
+    if (x.size() != precomputedLabels.size()) {
+        throw std::invalid_argument("Input vectors must have the same size");
+    }
+
+    // making wavefront
+    height = 64;
+    while (x.size() % height) height--;
+    width = x.size() / height;
+
+    // Calculate means
+    float meanX = mean(x);
+    // Calculate covariance and variances
+    float covXY = 0.0;
+    float varX = 0.0;
+
+    for (size_t i = 0; i < x.size(); ++i) {
+        covXY += (x[i] - meanX) * precomputedLabels[i];
+        varX += std::pow(x[i] - meanX, 2);
+    }
+    // Calculate Pearson correlation coefficient
+    return covXY / (std::sqrt(varX) * varLabels);
+}
+
+void Population::prepareForFitFunction(const std::vector<float> &y) {
+    float meanLabels = mean(y);
+    for (const auto &item: y) {
+        precomputedLabels.emplace_back(item - meanLabels);
+    }
+    for (const auto &item: y) {
+        varLabels += (item - meanLabels) * (item - meanLabels);
+    }
+    varLabels = std::sqrt(varLabels);
+
+}
+
+std::vector<float> Population::evaluateCPU(const std::vector<float>& x, const std::vector<float>& y,
+                                        const std::vector<float>& z, int equationIndex) {
+    std::vector<float> equation_results;
+    for (int j = 0; j < x.size(); ++j) {
+        equation_results.emplace_back(equations[equationIndex].evaluate(x[j], y[j], z[j]));
+    }
+    return equation_results;
+
+}
+
+std::vector<float> Population::evaluate(const std::vector<float>& x, const std::vector<float>& y,
+                                      const std::vector<float>& z, int equationIndex) {
+    std::vector<std::vector<float>> xyzVector;
+    xyzVector.push_back(x);
+    xyzVector.push_back(y);
+    xyzVector.push_back(z);
+    auto result = std::vector<float>(x.size(), equations[equationIndex].root);
+    auto out_tst = std::vector<float>{};
+
+    for (const auto &i: equations[equationIndex].nodes) {
+        auto variable = xyzVector[i.xyz];
+        if (i.operand == 0) {
+            auto d_y = vuh::Array<float>::fromHost(result, fPlus->device, fPlus->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(variable, fPlus->device, fPlus->physDevice);
+            fPlus->operator()(d_y, d_x, {width, height, i.value});
+            d_y.to_host(out_tst);
+        } else if (i.operand == 1) {
+            auto d_y = vuh::Array<float>::fromHost(result, fMinus->device, fMinus->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(variable, fMinus->device, fMinus->physDevice);
+            fMinus->operator()(d_y, d_x, {width, height, i.value});
+            d_y.to_host(out_tst);
+        } else if (i.operand == 2) {
+            auto d_y = vuh::Array<float>::fromHost(result, fMultiply->device, fMultiply->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(variable, fMultiply->device, fMultiply->physDevice);
+            fMultiply->operator()(d_y, d_x, {width, height, i.value});
+            d_y.to_host(out_tst);
+        } else if (i.operand == 3) {
+            auto d_y = vuh::Array<float>::fromHost(result, fDivide->device, fDivide->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(variable, fDivide->device, fDivide->physDevice);
+            fDivide->operator()(d_y, d_x, {width, height, i.value});
+            d_y.to_host(out_tst);
+        }
+
+    }
+    return out_tst;
 }

@@ -6,7 +6,10 @@
   Windows (`VulkanSDK-1.2.182.1-Installer.exe --accept-licenses --default-answer --confirm-command install com.lunarg.vulkan.32bit com.lunarg.vulkan.sdl2 com.lunarg.vulkan.glm com.lunarg.vulkan.volk com.lunarg.vulkan.vma com.lunarg.vulkan.debug com.lunarg.vulkan.debug32`))
 - compile shaders
 - `glslc saxpy.comp -o saxpy.spv`
-- `glslc compute_shader.comp -o compute_shader.spv`
+```
+glslc plus.comp -o plus.spv && glslc minus.comp -o minus.spv && \
+glslc multiply.comp -o multiply.spv && glslc divide.comp -o divide.spv
+```
 
 make sure you are loading with 64bit
 
