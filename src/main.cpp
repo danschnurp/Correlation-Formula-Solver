@@ -58,6 +58,7 @@ float pearsonCorrelationCPU(const std::vector<float> &x, const std::vector<float
  */
 void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data,
                 std::string &acc_filename) {
+    std::cout << "starting preprocess... " << std::endl;
     if (acc_filename.find("_cleared.csv") == std::string::npos) {
         normalize(data.first->x);
         normalize(data.first->y);
@@ -79,7 +80,7 @@ int main(int argc, char **argv) {
 
   try {
 
-    std::cout << "starting... " << std::endl;
+    std::cout  << std::endl << "starting... " << std::endl;
     bool load_sequential = false;
 
     auto start_time = std::chrono::high_resolution_clock::now();
@@ -98,7 +99,7 @@ int main(int argc, char **argv) {
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
-              << duration.count() / 1000 % 60 << " seconds" << std::endl;
+              << duration.count() / 1000 % 60 << " seconds" << std::endl  << std::endl;
 
     std::cout << "loaded hr " << data.second->x.size() << std::endl;
     std::cout << "loaded acc " << data.first->x.size() << std::endl;
@@ -111,17 +112,18 @@ int main(int argc, char **argv) {
     end_time = std::chrono::high_resolution_clock::now();
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
-              << duration.count() / 1000 % 60 << " seconds" << std::endl;
+              << duration.count() / 1000 % 60 << " seconds" << std::endl << std::endl;
 
     start_time = std::chrono::high_resolution_clock::now();
     auto population = std::make_unique<Population>();
-    std::vector<std::shared_ptr<Equation>> new_equations;
+    std::cout << "starting correlation compute... " << std::endl;
+    std::vector<Equation> new_equations;
     std::vector<float> population_results;
     std::vector<float> equation_results;
     for (int i = 0; i < population->populationSize; ++i) {
       try {
         for (int j = 0; j < data.first->x.size(); ++j) {
-          equation_results.emplace_back(population->equations[i]->evaluate(data.first->x[j],
+          equation_results.emplace_back(population->equations[i].evaluate(data.first->x[j],
                                                                            data.first->y[j],
                                                                            data.first->z[j]));
         }
@@ -131,7 +133,7 @@ int main(int argc, char **argv) {
         equation_results.clear();
       }
       catch (std::invalid_argument &ex) {
-        std::cerr << std::endl << ex.what() << std::endl;
+//        std::cerr << std::endl << ex.what() << std::endl;
         equation_results.clear();
         continue;
       }
@@ -139,7 +141,18 @@ int main(int argc, char **argv) {
     end_time = std::chrono::high_resolution_clock::now();
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
-              << duration.count() / 1000 % 60 << " seconds" << std::endl;
+    << duration.count() / 1000 % 60 << " seconds" << std::endl  << std::endl;
+    start_time = std::chrono::high_resolution_clock::now();
+
+    population->equations = new_equations;
+    std::cout << "started crossbreeding... " << std::endl;
+     std::vector<Equation> children = population->crossbreed();
+
+
+    end_time = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    std::cout << "Time taken: " << duration.count() / 1000 / 60 << " minutes "
+              << duration.count() / 1000 % 60 << " seconds" << std::endl  << std::endl;
     for (const auto &item : population_results) std::cout << item << " ";
 
   }

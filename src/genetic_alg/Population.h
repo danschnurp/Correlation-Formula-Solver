@@ -13,8 +13,11 @@ class Population {
  public:
   int populationSize = 200;
   std::vector<float> fitness;
-  std::vector<std::shared_ptr<Equation>> equations;
+  std::vector<Equation> equations;
   Population();
+
+    std::vector<Equation> crossbreed();
+
   friend std::ostream &operator<<(std::ostream &os, const Population &population);
 
 };
