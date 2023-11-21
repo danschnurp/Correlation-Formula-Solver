@@ -76,10 +76,6 @@ float Population::countFitFunction(const std::vector<float> &x) {
         throw std::invalid_argument("Input vectors must have the same size");
     }
 
-    // making wavefront
-    height = 64;
-    while (x.size() % height) height--;
-    width = x.size() / height;
 
     // Calculate means
     float meanX = mean(x);
@@ -96,6 +92,12 @@ float Population::countFitFunction(const std::vector<float> &x) {
 }
 
 void Population::prepareForFitFunction(const std::vector<float> &y) {
+
+    // making wavefront
+    height = 16;
+    while (y.size() % height > 0) height--;
+    width = y.size() / height;
+
     float meanLabels = mean(y);
     for (const auto &item: y) {
         precomputedLabels.emplace_back(item - meanLabels);
@@ -123,28 +125,28 @@ std::vector<float> Population::evaluate(const std::vector<float>& x, const std::
     xyzVector.push_back(x);
     xyzVector.push_back(y);
     xyzVector.push_back(z);
-    auto result = std::vector<float>(x.size(), equations[equationIndex].root);
-    auto out_tst = std::vector<float>{};
+    auto out_tst = std::vector<float>(x.size(), equations[equationIndex].root);
+
 
     for (const auto &i: equations[equationIndex].nodes) {
         auto variable = xyzVector[i.xyz];
         if (i.operand == 0) {
-            auto d_y = vuh::Array<float>::fromHost(result, fPlus->device, fPlus->physDevice);
+            auto d_y = vuh::Array<float>::fromHost(out_tst, fPlus->device, fPlus->physDevice);
             auto d_x = vuh::Array<float>::fromHost(variable, fPlus->device, fPlus->physDevice);
             fPlus->operator()(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         } else if (i.operand == 1) {
-            auto d_y = vuh::Array<float>::fromHost(result, fMinus->device, fMinus->physDevice);
+            auto d_y = vuh::Array<float>::fromHost(out_tst, fMinus->device, fMinus->physDevice);
             auto d_x = vuh::Array<float>::fromHost(variable, fMinus->device, fMinus->physDevice);
             fMinus->operator()(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         } else if (i.operand == 2) {
-            auto d_y = vuh::Array<float>::fromHost(result, fMultiply->device, fMultiply->physDevice);
+            auto d_y = vuh::Array<float>::fromHost(out_tst, fMultiply->device, fMultiply->physDevice);
             auto d_x = vuh::Array<float>::fromHost(variable, fMultiply->device, fMultiply->physDevice);
             fMultiply->operator()(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         } else if (i.operand == 3) {
-            auto d_y = vuh::Array<float>::fromHost(result, fDivide->device, fDivide->physDevice);
+            auto d_y = vuh::Array<float>::fromHost(out_tst, fDivide->device, fDivide->physDevice);
             auto d_x = vuh::Array<float>::fromHost(variable, fDivide->device, fDivide->physDevice);
             fDivide->operator()(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);

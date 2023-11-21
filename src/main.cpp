@@ -92,8 +92,8 @@ int main(int argc, char **argv) {
 
           start_time = std::chrono::high_resolution_clock::now();
 
-//          equation_results = population->evaluate(data.first->x,data.first->y,data.first->z,i);
-          equation_results = population->evaluateCPU(data.first->x,data.first->y,data.first->z,i);
+          equation_results = population->evaluate(data.first->x,data.first->y,data.first->z,i);
+//          equation_results = population->evaluateCPU(data.first->x,data.first->y,data.first->z,i);
 
         new_equations.push_back(population->equations[i]);
           std::cout << "evaluation of equation... " << std::endl;

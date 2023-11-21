@@ -96,7 +96,7 @@ auto ExampleFilter::createInstance(const std::vector<const char *> layers, const
                                      0,
                                      "no_engine",
                                      0,
-                                     VK_API_VERSION_1_0); // The only important field here is apiVersion
+                                     VK_API_VERSION_1_3); // The only important field here is apiVersion
   auto createInfo = vk::InstanceCreateInfo(vk::InstanceCreateFlags(), &appInfo, ARR_VIEW(layers), ARR_VIEW(extensions));
   return vk::createInstance(createInfo);
 }
