@@ -17,17 +17,13 @@ set(target_sources
         io/RecordHR.h io/RecordHR.cpp
         io/RecordACC.h io/RecordACC.cpp
         io/Loader.h io/Loader.cpp
-        gpu/VulkanGpu.cpp gpu/VulkanGpu.h
         preprocessing/utils.cpp preprocessing/utils.h
         genetic_alg/Node.cpp genetic_alg/Node.h
         genetic_alg/Equation.cpp genetic_alg/Equation.h
         genetic_alg/Population.cpp genetic_alg/Population.h
-        gpu/demo/Demo.cpp gpu/demo/Demo.h
-        gpu/demo/example_filter.cpp gpu/demo/example_filter.h
+        gpu/ComputationUnit.cpp gpu/ComputationUnit.h
         gpu/demo/vulkan_helpers.cpp
-        gpu/demo/vulkan_helpers.h
-        gpu/demo/vulkan_helpers.hpp
-        )
+        gpu/demo/vulkan_helpers.hpp)
 
 list(TRANSFORM target_sources PREPEND "src/")
 

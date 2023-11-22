@@ -3,7 +3,7 @@
 //
 
 #include "Equation.h"
-#include "../gpu/demo/example_filter.h"
+#include "../gpu/ComputationUnit.h"
 
 Equation::Equation() {
 

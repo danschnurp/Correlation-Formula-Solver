@@ -1,4 +1,4 @@
-#include "vulkan_helpers.h"
+#include "vulkan_helpers.hpp"
 
 #include <iostream>
 #include <fstream>
