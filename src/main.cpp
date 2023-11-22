@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
     std::vector<Equation> new_equations;
     std::vector<float> population_results;
     std::vector<float> equation_results;
+      std::vector<float> times;
     for (int i = 0; i < population->populationSize; ++i) {
       try {
 
@@ -110,14 +111,14 @@ int main(int argc, char **argv) {
 //          equation_results = population->evaluateCPU(data.first->x,data.first->y,data.first->z,i);
 
         new_equations.push_back(population->equations[i]);
-          std::cout << "evaluation of equation... " << std::endl;
-          print_time(start_time);
+//          std::cout << "evaluation of equation... " << std::endl;
+          times.emplace_back(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time).count() / 1000.0 );
 
 
           start_time = std::chrono::high_resolution_clock::now();
         float corr = population->countFitFunction(equation_results);
         population_results.emplace_back(corr);
-          print_time(start_time);
+//          print_time(start_time);
 
       }
       catch (std::invalid_argument &ex) {
@@ -126,6 +127,13 @@ int main(int argc, char **argv) {
         continue;
       }
     }
+
+      float sum = 0.0;
+      for (const float &value : times) {
+          sum += value;
+      }
+
+      std::cout << "average gpu time: " << sum / static_cast<double>(times.size())<< std::endl;
       std::cout << "parents: " << population_results.size() << std::endl;
 
     start_time = std::chrono::high_resolution_clock::now();

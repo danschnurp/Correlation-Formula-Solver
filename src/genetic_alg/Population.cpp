@@ -38,10 +38,10 @@ std::vector<Equation> Population::crossbreed() {
     std::default_random_engine e2(r());
     for (int i = 0; i < equations.size() / 2; ++i) {
 
-        std::uniform_int<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
+        std::uniform_int_distribution<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
         int firstCrossbreedingPoint = static_cast<int>(uni_dist(e2));
 
-        std::uniform_int<int> uni_dist2(0, firstHalf[i].nodes.size() - 1);
+        std::uniform_int_distribution<int> uni_dist2(0, firstHalf[i].nodes.size() - 1);
         int secondCrossbreedingPoint = static_cast<int>(uni_dist2(e2));
 
         std::vector<Node> tempNodes(firstCrossbreedingPoint);
