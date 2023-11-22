@@ -38,13 +38,12 @@ std::vector<Equation> Population::crossbreed() {
     std::random_device r;
     std::default_random_engine e2(r());
     for (int i = 0; i < equations.size() / 2; ++i) {
-        auto result = compute_mean_std(1, firstHalf[i].nodes.size() - 1);
-        std::normal_distribution<float> normal_dist(result.first, result.second);
-        int firstCrossbreedingPoint = static_cast<int>(normal_dist(e2));
 
-        result = compute_mean_std(1, secondHalf[i].nodes.size() - 1);
-        std::normal_distribution<float> normal_dist2(result.first, result.second);
-        int secondCrossbreedingPoint = static_cast<int>(normal_dist2(e2));
+        std::uniform_int<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
+        int firstCrossbreedingPoint = static_cast<int>(uni_dist(e2));
+
+        std::uniform_int<int> uni_dist2(0, firstHalf[i].nodes.size() - 1);
+        int secondCrossbreedingPoint = static_cast<int>(uni_dist2(e2));
 
         std::vector<Node> tempNodes(firstCrossbreedingPoint);
         std::vector<Node> tempNodes2(secondCrossbreedingPoint);
