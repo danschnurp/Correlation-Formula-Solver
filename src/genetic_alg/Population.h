@@ -34,8 +34,8 @@ class Population {
 
   std::vector<Equation> crossbreed();
 
-  std::vector<float> evaluate(const std::vector<float>& x, const std::vector<float>& y,
-                                            const std::vector<float>& z, int equationIndex);
+  std::vector<float> evaluate(std::vector<float>& x, std::vector<float>& y,
+                                            std::vector<float>& z, int equationIndex);
 
   std::vector<float> evaluateCPU(const std::vector<float>& x, const std::vector<float>& y,
                                                const std::vector<float>& z, int equationIndex);

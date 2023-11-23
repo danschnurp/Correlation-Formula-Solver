@@ -5,6 +5,7 @@
 
 #include "Population.h"
 #include <iostream>
+#include "../gpu/demo/vulkan_helpers.hpp"
 
 Population::Population() {
     for (int i = 0; i < populationSize; ++i) {
@@ -117,35 +118,34 @@ std::vector<float> Population::evaluateCPU(const std::vector<float>& x, const st
 
 }
 
-std::vector<float> Population::evaluate(const std::vector<float>& x, const std::vector<float>& y,
-                                      const std::vector<float>& z, int equationIndex) {
+std::vector<float> Population::evaluate(std::vector<float>& x, std::vector<float>& y,
+                                      std::vector<float>& z, int equationIndex) {
     std::vector<std::vector<float>> xyzVector;
     xyzVector.push_back(x);
     xyzVector.push_back(y);
     xyzVector.push_back(z);
+
+
     auto out_tst = std::vector<float>(x.size(), equations[equationIndex].root);
-
-
     for (const auto &i: equations[equationIndex].nodes) {
-        auto variable = xyzVector[i.xyz];
         if (i.operand == 0) {
             auto d_y = vuh::Array<float>::fromHost(out_tst, fPlus->device, fPlus->physDevice);
-            auto d_x = vuh::Array<float>::fromHost(variable, fPlus->device, fPlus->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fPlus->device, fPlus->physDevice);
             fPlus->compute(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         } else if (i.operand == 1) {
             auto d_y = vuh::Array<float>::fromHost(out_tst, fMinus->device, fMinus->physDevice);
-            auto d_x = vuh::Array<float>::fromHost(variable, fMinus->device, fMinus->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fMinus->device, fMinus->physDevice);
             fMinus->compute(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         } else if (i.operand == 2) {
             auto d_y = vuh::Array<float>::fromHost(out_tst, fMultiply->device, fMultiply->physDevice);
-            auto d_x = vuh::Array<float>::fromHost(variable, fMultiply->device, fMultiply->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fMultiply->device, fMultiply->physDevice);
             fMultiply->compute(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         } else if (i.operand == 3) {
             auto d_y = vuh::Array<float>::fromHost(out_tst, fDivide->device, fDivide->physDevice);
-            auto d_x = vuh::Array<float>::fromHost(variable, fDivide->device, fDivide->physDevice);
+            auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fDivide->device, fDivide->physDevice);
             fDivide->compute(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         }
