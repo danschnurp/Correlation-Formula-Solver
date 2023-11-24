@@ -1,7 +1,6 @@
 //
 // Created by Dan Schnurpfeil on 21.09.2023.
 //
-#include "io/Loader.h"
 #include "preprocessing/utils.h"
 #include <thread>
 #include <iostream>
@@ -15,31 +14,7 @@ void print_time(auto start_time) {
     std::cout << "Time taken: " <<  duration_t->tm_min << " min " << duration_t->tm_sec << " sec" << std::endl  << std::endl;
 }
 
-/**
- * The preprocess function normalizes and processes accelerometer and heart rate data, removes redundant data, and saves
- * the cleared accelerometer data.
- *
- * @param shared_ptr A shared pointer is a smart pointer that can be used to manage the lifetime of dynamically allocated
- * objects. It allows multiple shared pointers to share ownership of the same object, and automatically deletes the object
- * when the last shared pointer that owns it is destroyed.
- * @param acc_filename The `acc_filename` parameter is a reference to a string that represents the filename of the
- * accelerometer data file.
- */
-void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data,
-                std::string &acc_filename) {
-    std::cout << "starting preprocess... " << std::endl;
-    if (acc_filename.find("_cleared.csv") == std::string::npos) {
-        normalize(data.first->x);
-        normalize(data.first->y);
-        normalize(data.first->z);
-    }
-    normalize(data.second->x);
-    if (acc_filename.find("_cleared.csv") == std::string::npos) {
-        remove_redundant(data);
-        save_cleared_ACC_data("../data/ACC_007_cleared.csv", data.first);
-    }
-    interpolate(data);
-}
+
 
 void create_one_generation(std::unique_ptr<Population> &population, auto &data, int wave) {
 
@@ -117,17 +92,30 @@ void create_one_generation(std::unique_ptr<Population> &population, auto &data, 
 
 int main(int argc, char **argv) {
 
-    const auto width = 90;
-    const auto height = 60;
-    const auto a = 2.0f; // saxpy scaling factor
 
-    auto y = std::vector<float>(width * height, 0.71f);
-    auto x = std::vector<float>(width * height, 0.65f);
+//todo
+// input data path
+//  cleared acc or no
+// GPU device to run
+// GPU workgroup size
+// precompile spirv  check
+// refactor gpu computation unit
+// equation xyz interval
+// evaluate on cpu or on gpu
 
-    std::cout << "VULKAN correctness demo: result = 2 * 0.65 + 0.71 ...should be 2.01" << std::endl;
 
-    ComputationUnit f("../saxpy.spv");
-    auto d_y = vuh::Array<float>::fromHost(y, f.device, f.physDevice);
+
+  const auto width = 90;
+  const auto height = 60;
+  const auto a = 2.0f; // saxpy scaling factor
+
+  auto y = std::vector<float>(width * height, 0.71f);
+  auto x = std::vector<float>(width * height, 0.65f);
+
+  std::cout << "VULKAN correctness demo: result = 2 * 0.65 + 0.71 ...should be 2.01" << std::endl;
+
+  ComputationUnit f("../saxpy.spv", true);
+  auto d_y = vuh::Array<float>::fromHost(y, f.device, f.physDevice);
     auto d_x = vuh::Array<float>::fromHost(x, f.device, f.physDevice);
 
     f.compute(d_y, d_x, {width, height, a});

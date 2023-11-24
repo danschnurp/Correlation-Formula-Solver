@@ -20,6 +20,7 @@ std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
     data_acc = loader_acc->load_ACC_data(acc_filename);
     data_hr = loader_hr->load_HR_data(hr_filename);
   } else {
+    // `hr_thread_loader` and `acc_thread_loader`, load data from two different files concurrently.
     auto hr_thread_loader = std::thread([&hr_filename, &data_hr, &loader_hr]() {
       try {
         data_hr = loader_hr->load_HR_data(hr_filename);

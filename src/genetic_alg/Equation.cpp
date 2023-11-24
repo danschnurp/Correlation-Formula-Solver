@@ -15,7 +15,7 @@ Equation::Equation() {
     std::normal_distribution<float> normal_dist_values(result.first, result.second);
     root = normal_dist_values(e2);
 
-    // length of equation is 3 - 7
+    // initial length of equation is 3 - 7
     result = compute_mean_std(3.0, 7);
     std::normal_distribution<float> normal_dist_len(result.first, result.second);
     for (int i = 0; i < static_cast<int>(round(normal_dist_len(e2))); ++i) {

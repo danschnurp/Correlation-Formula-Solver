@@ -27,6 +27,7 @@ Node::Node() {
     value = normal_dist_values(e2);
 
 
+    // random 0 and 2 (inclusive) and uses unif distribution for X / Y / Z
     std::uniform_int_distribution<int> dist_xyz(0, 2);
     xyz = static_cast<int>(dist_xyz(e2));
 

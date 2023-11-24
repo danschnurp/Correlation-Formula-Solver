@@ -35,8 +35,8 @@ public: // data
 
     uint32_t compute_queue_familly_id;
 public:
-    explicit ComputationUnit(const std::string &shaderPath);
-    ~ComputationUnit() noexcept;
+    explicit ComputationUnit(const std::string &shaderPath, bool printDeviceInfo);
+  ~ComputationUnit() noexcept;
 
     auto compute(vk::Buffer &out, const vk::Buffer &in, const PushParams &p) const -> void;
 

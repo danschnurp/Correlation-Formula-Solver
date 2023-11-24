@@ -6,15 +6,30 @@
 
 #include <cmath>
 
+void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data,
+                std::string &acc_filename) {
+  std::cout << "starting preprocess... " << std::endl;
+  if (acc_filename.find("_cleared.csv") == std::string::npos) {
+    normalize(data.first->x);
+    normalize(data.first->y);
+    normalize(data.first->z);
+  }
+  normalize(data.second->x);
+  if (acc_filename.find("_cleared.csv") == std::string::npos) {
+    remove_redundant(data);
+    save_cleared_ACC_data("../data/ACC_007_cleared.csv", data.first);
+  }
+  interpolate(data);
+}
 
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
-    int interpolate_counter = 0;
-    std::tm curr = data.first->timestamp[0];
-    std::vector<float> interpolated;
-    int hr_counter = 0;
-    float start;
-    float step;
-    for (std::tm &i: data.first->timestamp) {
+  int interpolate_counter = 0;
+  std::tm curr = data.first->timestamp[0];
+  std::vector<float> interpolated;
+  int hr_counter = 0;
+  float start;
+  float step;
+  for (std::tm &i : data.first->timestamp) {
 
         if (i.tm_year == curr.tm_year && i.tm_mon == curr.tm_mon && i.tm_mday == curr.tm_mday &&
         i.tm_hour == curr.tm_hour && i.tm_min == curr.tm_min && i.tm_sec == curr.tm_sec) {

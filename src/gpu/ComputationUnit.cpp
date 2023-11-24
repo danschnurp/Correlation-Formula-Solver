@@ -23,24 +23,46 @@ namespace {
 
 
 /// Constructor
-ComputationUnit::ComputationUnit(const std::string &shaderPath) {
-    auto appInfo = vk::ApplicationInfo("PPR Compute app",
-                                       0,
-                                       "no_engine",
-                                       0,
-                                       VK_API_VERSION_1_0); // The only important field here is apiVersion
-    auto createInfo = vk::InstanceCreateInfo(vk::InstanceCreateFlags(), &appInfo, {}, {});
-    instance = vk::createInstance(createInfo);
+ComputationUnit::ComputationUnit(const std::string &shaderPath, bool printDeviceInfo) {
+  auto appInfo = vk::ApplicationInfo("PPR Compute app",
+                                     0,
+                                     "no_engine",
+                                     0,
+                                     VK_API_VERSION_1_0); // The only important field here is apiVersion
+  auto createInfo = vk::InstanceCreateInfo(vk::InstanceCreateFlags(), &appInfo, {}, {});
+  instance = vk::createInstance(createInfo);
+  if (printDeviceInfo) {
+    // Print device information.
     physDevice = instance.enumeratePhysicalDevices()[0]; // just use the first device
-    compute_queue_familly_id = getComputeQueueFamilyId(physDevice);
-    device = createDevice(physDevice, {}, compute_queue_familly_id);
-    shader = loadShader(device, shaderPath.c_str());
-    auto bindLayout = std::array<vk::DescriptorSetLayoutBinding, NumDescriptors>{{
-                                                                                         {0,
-                                                                                          vk::DescriptorType::eStorageBuffer,
-                                                                                          1,
-                                                                                          vk::ShaderStageFlagBits::eCompute},
-                                                                                         {1,
+    VkPhysicalDeviceProperties deviceProperties;
+    vkGetPhysicalDeviceProperties(physDevice, &deviceProperties);
+
+    std::cout << "Device Name: " << deviceProperties.deviceName << std::endl;
+    std::cout << "Device Type: " << deviceProperties.deviceType << std::endl;
+    std::cout << "API Version: " << VK_VERSION_MAJOR(deviceProperties.apiVersion) << "."
+              << VK_VERSION_MINOR(deviceProperties.apiVersion) << "." << VK_VERSION_PATCH(deviceProperties.apiVersion)
+              << std::endl;
+    std::cout << "Driver Version: " << deviceProperties.driverVersion << std::endl;
+    std::cout << "Vendor ID: " << deviceProperties.vendorID << std::endl;
+    std::cout << "Device ID: " << deviceProperties.deviceID << std::endl;
+
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceFeatures(physDevice, &deviceFeatures);
+    std::cout << "Geometry Shader Support: " << (deviceFeatures.geometryShader ? "Yes" : "No") << std::endl;
+    std::cout << "Tessellation Shader Support: " << (deviceFeatures.tessellationShader ? "Yes" : "No") << std::endl;
+
+    std::cout << "--------------------------------------" << std::endl;
+  }
+
+  compute_queue_familly_id = getComputeQueueFamilyId(physDevice);
+  device = createDevice(physDevice, {}, compute_queue_familly_id);
+  shader = loadShader(device, shaderPath.c_str());
+  auto bindLayout = std::array<vk::DescriptorSetLayoutBinding, NumDescriptors>{{
+                                                                                   {0,
+                                                                                    vk::DescriptorType::eStorageBuffer,
+                                                                                    1,
+                                                                                    vk::ShaderStageFlagBits::eCompute},
+                                                                                   {1,
                                                                                           vk::DescriptorType::eStorageBuffer,
                                                                                           1,
                                                                                           vk::ShaderStageFlagBits::eCompute}

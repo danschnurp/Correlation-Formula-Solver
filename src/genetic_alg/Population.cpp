@@ -8,13 +8,13 @@
 #include "../gpu/demo/vulkan_helpers.hpp"
 
 Population::Population() {
-    for (int i = 0; i < populationSize; ++i) {
-        equations.emplace_back(Equation());
-        fitness.emplace_back(0);
-    }
-    fPlus = std::make_unique<ComputationUnit>("../plus.spv");
-    fMinus = std::make_unique<ComputationUnit>("../minus.spv");
-    fMultiply = std::make_unique<ComputationUnit>("../multiply.spv");
+  for (int i = 0; i < populationSize; ++i) {
+    equations.emplace_back(Equation());
+    fitness.emplace_back(0);
+  }
+  fPlus = std::make_unique<ComputationUnit>("../plus.spv", false);
+  fMinus = std::make_unique<ComputationUnit>("../minus.spv", false);
+  fMultiply = std::make_unique<ComputationUnit>("../multiply.spv", false);
 }
 
 std::ostream &operator<<(std::ostream &os, const Population &population) {
@@ -32,19 +32,17 @@ std::vector<Equation> Population::crossbreed() {
     std::copy(equations.begin(), equations.end() - equations.size() / 2, firstHalf.begin());
     std::vector<Equation> secondHalf( equations.size() / 2);
     std::copy(equations.end() - equations.size() / 2, equations.end(), secondHalf.begin());
-
     std::vector<Equation> children;
 
     std::random_device r;
     std::default_random_engine e2(r());
     for (int i = 0; i < equations.size() / 2; ++i) {
-
+      // random crossover points
         std::uniform_int_distribution<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
         int firstCrossbreedingPoint = static_cast<int>(uni_dist(e2));
-
         std::uniform_int_distribution<int> uni_dist2(0, firstHalf[i].nodes.size() - 1);
         int secondCrossbreedingPoint = static_cast<int>(uni_dist2(e2));
-
+      // new chromosomes
         std::vector<Node> tempNodes(firstCrossbreedingPoint);
         std::vector<Node> tempNodes2(secondCrossbreedingPoint);
 
@@ -68,14 +66,10 @@ float mean(const std::vector<float> &data) {
     return sum / data.size();
 }
 
-
-
 float Population::countFitFunction(const std::vector<float> &x) {
     if (x.size() != precomputedLabels.size()) {
         throw std::invalid_argument("Input vectors must have the same size");
     }
-
-
     // Calculate means
     float meanX = mean(x);
     // Calculate covariance and variances
@@ -91,7 +85,6 @@ float Population::countFitFunction(const std::vector<float> &x) {
 }
 
 void Population::prepareForFitFunction(const std::vector<float> &y) {
-
     // making wavefront
     height = 16;
     while (y.size() % height > 0) height--;
@@ -105,7 +98,6 @@ void Population::prepareForFitFunction(const std::vector<float> &y) {
         varLabels += (item - meanLabels) * (item - meanLabels);
     }
     varLabels = std::sqrt(varLabels);
-
 }
 
 std::vector<float> Population::evaluateCPU(const std::vector<float>& x, const std::vector<float>& y,
@@ -115,11 +107,11 @@ std::vector<float> Population::evaluateCPU(const std::vector<float>& x, const st
         equation_results.emplace_back(equations[equationIndex].evaluate(x[j], y[j], z[j]));
     }
     return equation_results;
-
 }
 
 std::vector<float> Population::evaluate(std::vector<float>& x, std::vector<float>& y,
                                       std::vector<float>& z, int equationIndex) {
+  // dermining x / y / Z
     std::vector<std::vector<float>> xyzVector;
     xyzVector.push_back(x);
     xyzVector.push_back(y);
@@ -143,7 +135,6 @@ std::vector<float> Population::evaluate(std::vector<float>& x, std::vector<float
             fMultiply->compute(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         }
-
     }
     return out_tst;
 }
