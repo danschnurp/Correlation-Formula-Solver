@@ -10,11 +10,11 @@
 Population::Population() {
     for (int i = 0; i < populationSize; ++i) {
         equations.emplace_back(Equation());
+        fitness.emplace_back(0);
     }
     fPlus = std::make_unique<ComputationUnit>("../plus.spv");
     fMinus = std::make_unique<ComputationUnit>("../minus.spv");
     fMultiply = std::make_unique<ComputationUnit>("../multiply.spv");
-    fDivide = std::make_unique<ComputationUnit>("../divide.spv");
 }
 
 std::ostream &operator<<(std::ostream &os, const Population &population) {
@@ -48,7 +48,7 @@ std::vector<Equation> Population::crossbreed() {
         std::vector<Node> tempNodes(firstCrossbreedingPoint);
         std::vector<Node> tempNodes2(secondCrossbreedingPoint);
 
-        children.emplace_back(Equation());
+        children.emplace_back();
         children[children.size()-1].nodes.clear();
         for (auto &item: tempNodes) {
             children[children.size() -1].nodes.push_back(item);
@@ -87,7 +87,7 @@ float Population::countFitFunction(const std::vector<float> &x) {
         varX += std::pow(x[i] - meanX, 2);
     }
     // Calculate Pearson correlation coefficient
-    return covXY / (std::sqrt(varX) * varLabels);
+    return std::abs(covXY / (std::sqrt(varX) * varLabels));
 }
 
 void Population::prepareForFitFunction(const std::vector<float> &y) {
@@ -124,9 +124,8 @@ std::vector<float> Population::evaluate(std::vector<float>& x, std::vector<float
     xyzVector.push_back(x);
     xyzVector.push_back(y);
     xyzVector.push_back(z);
-
-
     auto out_tst = std::vector<float>(x.size(), equations[equationIndex].root);
+
     for (const auto &i: equations[equationIndex].nodes) {
         if (i.operand == 0) {
             auto d_y = vuh::Array<float>::fromHost(out_tst, fPlus->device, fPlus->physDevice);
@@ -142,11 +141,6 @@ std::vector<float> Population::evaluate(std::vector<float>& x, std::vector<float
             auto d_y = vuh::Array<float>::fromHost(out_tst, fMultiply->device, fMultiply->physDevice);
             auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fMultiply->device, fMultiply->physDevice);
             fMultiply->compute(d_y, d_x, {width, height, i.value});
-            d_y.to_host(out_tst);
-        } else if (i.operand == 3) {
-            auto d_y = vuh::Array<float>::fromHost(out_tst, fDivide->device, fDivide->physDevice);
-            auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fDivide->device, fDivide->physDevice);
-            fDivide->compute(d_y, d_x, {width, height, i.value});
             d_y.to_host(out_tst);
         }
 

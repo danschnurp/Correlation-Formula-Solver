@@ -51,11 +51,6 @@ float_t Equation::evaluate(float_t x, float_t y, float_t z) {
           case multiply:xyz = determine_xyz(i.xyz, x, y, z);
             result *= i.value * xyz;
             break;
-          case divide:xyz = determine_xyz(i.xyz, x, y, z);
-            if (i.value * xyz == 0)
-              throw std::invalid_argument("result is zero... cant divide");
-            result /= i.value * xyz;
-            break;
           default:result = root;
         }
     }
@@ -73,8 +68,6 @@ std::ostream &operator<<(std::ostream &os, const Equation &equation) {
                 os << " " << "-";break;
             case multiply:
                 os << " " << "*";break;
-            case divide:
-                os << " " << "/";break;
             default:
                 os << " " << "None";break;
         }
@@ -92,4 +85,12 @@ std::ostream &operator<<(std::ostream &os, const Equation &equation) {
     }
     os << std::endl;
     return os;
+}
+
+bool Equation::operator==(const Equation &rhs) const {
+    return root == rhs.root;
+}
+
+bool Equation::operator!=(const Equation &rhs) const {
+    return !(rhs == *this);
 }

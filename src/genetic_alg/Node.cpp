@@ -18,16 +18,16 @@ Node::Node() {
     std::random_device r;
     std::default_random_engine e2(r());
 
-    auto result = compute_mean_std(0.0, 3.0);
-    std::normal_distribution<float> normal_dist(result.first, result.second);
+
+    std::uniform_int_distribution<int> normal_dist(0, 3);
     operand = static_cast<int>(normal_dist(e2));
     // coefficients are in interval -2, 2
-    result = compute_mean_std(-2.0, 2.0);
+    auto result = compute_mean_std(-2.0, 2.0);
     std::normal_distribution<float> normal_dist_values(result.first, result.second);
     value = normal_dist_values(e2);
 
-    result = compute_mean_std(0.0, 2.0);
-    std::normal_distribution<float> normal_dist_xyz(result.first, result.second);
+
+    std::uniform_int_distribution<int> normal_dist_xyz(0, 2);
     xyz = static_cast<int>(normal_dist_xyz(e2));
 
     }

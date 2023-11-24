@@ -10,7 +10,6 @@ glslc saxpy.comp -o saxpy.spv
 glslc plus.comp -o plus.spv 
 glslc minus.comp -o minus.spv
 glslc multiply.comp -o multiply.spv
-glslc divide.comp -o divide.spv
 
 ```
 

@@ -10,6 +10,8 @@
 #include <memory>
 #include <ostream>
 
+float mean(const std::vector<float> &data);
+
 class Population {
     float varLabels = 0;
     std::vector<float> precomputedLabels;
@@ -17,7 +19,6 @@ class Population {
     std::unique_ptr<ComputationUnit> fPlus;
     std::unique_ptr<ComputationUnit> fMinus;
     std::unique_ptr<ComputationUnit> fMultiply;
-    std::unique_ptr<ComputationUnit> fDivide;
 
     // wavefront parameters
     uint32_t width, height;

@@ -10,7 +10,7 @@
 #include "Node.h"
 
 enum Operand {
-    plus=0,minus=1,multiply=2,divide=3
+    plus=0,minus=1,multiply=2
 };
 
 
@@ -27,6 +27,10 @@ public:
     Equation();
 
     friend std::ostream &operator<<(std::ostream &os, const Equation &equation);
+
+    bool operator==(const Equation &rhs) const;
+
+    bool operator!=(const Equation &rhs) const;
 
     /**
      * The function evaluates an equation using the given values of x, y, and z.
