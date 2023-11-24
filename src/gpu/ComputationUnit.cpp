@@ -31,9 +31,10 @@ ComputationUnit::ComputationUnit(const std::string &shaderPath, bool printDevice
                                      VK_API_VERSION_1_0); // The only important field here is apiVersion
   auto createInfo = vk::InstanceCreateInfo(vk::InstanceCreateFlags(), &appInfo, {}, {});
   instance = vk::createInstance(createInfo);
+  // Print device information.
+  physDevice = instance.enumeratePhysicalDevices()[0]; // just use the first device
+
   if (printDeviceInfo) {
-    // Print device information.
-    physDevice = instance.enumeratePhysicalDevices()[0]; // just use the first device
     VkPhysicalDeviceProperties deviceProperties;
     vkGetPhysicalDeviceProperties(physDevice, &deviceProperties);
 

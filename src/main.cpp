@@ -14,73 +14,60 @@ void print_time(auto start_time) {
     std::cout << "Time taken: " <<  duration_t->tm_min << " min " << duration_t->tm_sec << " sec" << std::endl  << std::endl;
 }
 
-
-
 void create_one_generation(std::unique_ptr<Population> &population, auto &data, int wave) {
+  std::cout << "starting correlation compute... " << std::endl;
+  std::vector<float> population_results;
 
-    std::cout << "starting correlation compute... " << std::endl;
+  auto start_time = std::chrono::high_resolution_clock::now();
+  try {
+    for (Equation &item : population->equations) {
 
-    std::vector<Equation> new_equations;
-    std::vector<float> population_results;
-    std::vector<float> equation_results;
-    auto start_time = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < population->populationSize; ++i) {
-        try {
-            equation_results = population->evaluate(data.first->x, data.first->y, data.first->z, i);
-//          equation_results = population->evaluateCPU(data.first->x,data.first->y,data.first->z,i);
-
-            new_equations.push_back(population->equations[i]);
-            float corr = population->countFitFunction(equation_results);
-            population_results.emplace_back(corr);
-        }
-        catch (std::invalid_argument &ex) {
-            std::cerr << std::endl << ex.what() << std::endl;
-            equation_results.clear();
-            continue;
-        }
-        catch (std::exception & err)
-        {
-            std::cerr << std::endl << err.what() << std::endl;
-            return;
-        }
+//          population_results.emplace_back(population->countFitFunction(population->evaluateCPU(data.first->x, data.first->y, data.first->z, item)));
+      population_results.emplace_back(population->countFitFunction(population->evaluate(data.first->x,
+                                                                                        data.first->y,
+                                                                                        data.first->z,
+                                                                                        item)));
     }
-    print_time(start_time);
-
-    std::cout << "average fitness: " << mean(population_results) << std::endl;
-    float mean_result = mean(population_results);
-
-    for (int j = 0; j < new_equations.size(); ++j) {
-        if (population_results[j] - population->fitness[j] <= (mean_result + mean_result / 45 * (1 + wave))) {
-            new_equations[j].root = std::numeric_limits<float>::max();
-            population_results[j] = std::numeric_limits<float>::max();
-        }
+  }
+  catch (...) {
+    std::cout << "..." << std::endl;
+    throw std::runtime_error("...");
+  }
+  print_time(start_time);
+  // selection based on fit function
+  std::cout << "average fitness: " << mean(population_results) << std::endl;
+  float mean_result = mean(population_results);
+  for (int j = 0; j < population->equations.size(); ++j) {
+    if (population_results[j] - population->fitness[j] <= (mean_result + mean_result / 45 * (1 + wave))) {
+      population->equations[j].root = std::numeric_limits<float>::max();
+      population_results[j] = std::numeric_limits<float>::max();
     }
-    std::erase_if(new_equations,[] (Equation& value) {return value.root == std::numeric_limits<float>::max();});
-    std::erase_if(population_results,[] (float& value) {return value == std::numeric_limits<float>::max();});
-
-    auto index_max = std::max_element(population_results.begin(), population_results.end());
-    int index_m = std::distance(population_results.begin(), index_max);
-    std::cout << "max fitness: " << population_results[index_m] << std::endl;
-    std::cout << "best local equation: " << new_equations[index_m] << std::endl;
-
-    std::cout << "parents population size: " << new_equations.size() << std::endl;
-    std::cout << "average population fitness after selection: " << mean(population_results) << std::endl;
-    start_time = std::chrono::high_resolution_clock::now();
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(new_equations.begin(), new_equations.end(), g);
-    population->equations = new_equations;
-    std::cout << "started crossbreeding... " << std::endl;
-
-    std::vector<Equation> children = population->crossbreed();
-    std::cout << "children: " << children.size() << std::endl;
-
-    if (population->populationSize - population->equations.size() < children.size()) {
-        for (int j = 0; j < population->populationSize - population->equations.size(); ++j) {
-            population->equations.push_back(children[j]);
-        }
-    } else {
-        for (auto &item: children) population->equations.push_back(item);
+  }
+  std::erase_if(population->equations, [](Equation &value) { return value.root == std::numeric_limits<float>::max(); });
+  std::erase_if(population_results, [](float &value) { return value == std::numeric_limits<float>::max(); });
+  // print stats
+  auto index_max = std::max_element(population_results.begin(), population_results.end());
+  int index_m = std::distance(population_results.begin(), index_max);
+  std::cout << "max fitness: " << population_results[index_m] << std::endl;
+  std::cout << "best local equation: " << population->equations[index_m] << std::endl;
+  std::cout << "parents population size: " << population->equations.size() << std::endl;
+  std::cout << "average population fitness after selection: " << mean(population_results) << std::endl;
+  // crossbreeding
+  start_time = std::chrono::high_resolution_clock::now();
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(population->equations.begin(), population->equations.end(), g);
+  population->equations = population->equations;
+  std::cout << "started crossbreeding... " << std::endl;
+  std::vector<Equation> children = population->crossbreed();
+  std::cout << "children: " << children.size() << std::endl;
+  // completes population todo why compute again fit on parents
+  if (population->populationSize - population->equations.size() < children.size()) {
+    for (int j = 0; j < population->populationSize - population->equations.size(); ++j) {
+      population->equations.push_back(children[j]);
+    }
+  } else {
+    for (auto &item : children) population->equations.push_back(item);
         for (int j = 0; j < population->populationSize - population->equations.size(); ++j) {
             population->equations.emplace_back();
         }

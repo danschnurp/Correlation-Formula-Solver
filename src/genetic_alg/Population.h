@@ -61,21 +61,8 @@ class Population {
    */
   std::vector<Equation> crossbreed();
 
-  /**
-   * The function evaluates a set of equations using given input vectors and returns the result.
-   *
-   * @param x A vector of float values representing the x-coordinates of the points in the population.
-   * @param y The parameter `y` is a vector of float values. It is being passed as a reference to the `evaluate` function.
-   * @param z The parameter `z` is a vector of float values. It is being used as one of the input variables in the evaluation
-   * of equations.
-   * @param equationIndex The `equationIndex` parameter is an integer that represents the index of the equation to be
-   * evaluated. It is used to access the equation from the `equations` vector.
-   *
-   * @return The function `evaluate` returns a `std::vector<float>` containing the evaluated values based on the given
-   * equations and input vectors.
-   */
   std::vector<float> evaluate(std::vector<float> &x, std::vector<float> &y,
-                              std::vector<float> &z, int equationIndex);
+                              std::vector<float> &z, const Equation &equation);
   /**
    * The function evaluates a set of equations using given input vectors and returns the results.
    *
@@ -88,7 +75,7 @@ class Population {
    * @return a vector of floats, which contains the results of evaluating the equations for each set of x, y, and z values.
    */
   std::vector<float> evaluateCPU(const std::vector<float> &x, const std::vector<float> &y,
-                                 const std::vector<float> &z, int equationIndex);
+                                 const std::vector<float> &z, Equation &equation);
 
   friend std::ostream &operator<<(std::ostream &os, const Population &population);
 

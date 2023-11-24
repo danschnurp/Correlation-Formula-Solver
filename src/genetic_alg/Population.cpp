@@ -100,35 +100,35 @@ void Population::prepareForFitFunction(const std::vector<float> &y) {
     varLabels = std::sqrt(varLabels);
 }
 
-std::vector<float> Population::evaluateCPU(const std::vector<float>& x, const std::vector<float>& y,
-                                        const std::vector<float>& z, int equationIndex) {
-    std::vector<float> equation_results;
-    for (int j = 0; j < x.size(); ++j) {
-        equation_results.emplace_back(equations[equationIndex].evaluate(x[j], y[j], z[j]));
-    }
-    return equation_results;
+std::vector<float> Population::evaluateCPU(const std::vector<float> &x, const std::vector<float> &y,
+                                           const std::vector<float> &z, Equation &equation) {
+  std::vector<float> equation_results;
+  for (int j = 0; j < x.size(); ++j) {
+    equation_results.emplace_back(equation.evaluate(x[j], y[j], z[j]));
+  }
+  return equation_results;
 }
 
-std::vector<float> Population::evaluate(std::vector<float>& x, std::vector<float>& y,
-                                      std::vector<float>& z, int equationIndex) {
+std::vector<float> Population::evaluate(std::vector<float> &x, std::vector<float> &y,
+                                        std::vector<float> &z, const Equation &equation) {
   // dermining x / y / Z
-    std::vector<std::vector<float>> xyzVector;
-    xyzVector.push_back(x);
-    xyzVector.push_back(y);
-    xyzVector.push_back(z);
-    auto out_tst = std::vector<float>(x.size(), equations[equationIndex].root);
+  std::vector<std::vector<float>> xyzVector;
+  xyzVector.push_back(x);
+  xyzVector.push_back(y);
+  xyzVector.push_back(z);
+  auto out_tst = std::vector<float>(x.size(), equation.root);
 
-    for (const auto &i: equations[equationIndex].nodes) {
-        if (i.operand == 0) {
-            auto d_y = vuh::Array<float>::fromHost(out_tst, fPlus->device, fPlus->physDevice);
-            auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fPlus->device, fPlus->physDevice);
-            fPlus->compute(d_y, d_x, {width, height, i.value});
-            d_y.to_host(out_tst);
-        } else if (i.operand == 1) {
-            auto d_y = vuh::Array<float>::fromHost(out_tst, fMinus->device, fMinus->physDevice);
-            auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fMinus->device, fMinus->physDevice);
-            fMinus->compute(d_y, d_x, {width, height, i.value});
-            d_y.to_host(out_tst);
+  for (const auto &i : equation.nodes) {
+    if (i.operand == 0) {
+      auto d_y = vuh::Array<float>::fromHost(out_tst, fPlus->device, fPlus->physDevice);
+      auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fPlus->device, fPlus->physDevice);
+      fPlus->compute(d_y, d_x, {width, height, i.value});
+      d_y.to_host(out_tst);
+    } else if (i.operand == 1) {
+      auto d_y = vuh::Array<float>::fromHost(out_tst, fMinus->device, fMinus->physDevice);
+      auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fMinus->device, fMinus->physDevice);
+      fMinus->compute(d_y, d_x, {width, height, i.value});
+      d_y.to_host(out_tst);
         } else if (i.operand == 2) {
             auto d_y = vuh::Array<float>::fromHost(out_tst, fMultiply->device, fMultiply->physDevice);
             auto d_x = vuh::Array<float>::fromHost(xyzVector[i.xyz], fMultiply->device, fMultiply->physDevice);
