@@ -83,6 +83,10 @@ void create_one_generation(std::unique_ptr<Population> &population, auto &data, 
     std::erase_if(new_equations,[] (Equation& value) {return value.root == std::numeric_limits<float>::max();});
     std::erase_if(population_results,[] (float& value) {return value == std::numeric_limits<float>::max();});
 
+    auto index_max = std::max_element(population_results.begin(), population_results.end());
+    int index_m = std::distance(population_results.begin(), index_max);
+    std::cout << "max fitness: " << population_results[index_m] << std::endl;
+    std::cout << "best local equation: " << new_equations[index_m] << std::endl;
 
     std::cout << "parents population size: " << new_equations.size() << std::endl;
     std::cout << "average population fitness after selection: " << mean(population_results) << std::endl;
@@ -160,9 +164,9 @@ int main(int argc, char **argv) {
 
         population->prepareForFitFunction(data.second->x);
 
-        for (int epoch = 0; epoch < 10; ++epoch) {
+        for (int epoch = 0; epoch < 100; ++epoch) {
             create_one_generation(population, data, epoch % 10);
-            std::cout << "epoch " << epoch << " done... " << std::endl;
+            std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
         }
     }
         catch (std::exception & err)

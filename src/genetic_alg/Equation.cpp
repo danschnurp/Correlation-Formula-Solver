@@ -10,8 +10,8 @@ Equation::Equation() {
     std::random_device r;
     std::default_random_engine e2(r());
 
-    // coefficients are in interval -2, 2
-    auto result = compute_mean_std(-2.0, 2.0);
+    // coefficients are in interval -5, 5
+    auto result = compute_mean_std(-5.0, 5.0);
     std::normal_distribution<float> normal_dist_values(result.first, result.second);
     root = normal_dist_values(e2);
 
