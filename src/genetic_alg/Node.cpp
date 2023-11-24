@@ -22,7 +22,7 @@ Node::Node() {
     std::uniform_int_distribution<int> dist(0, 2);
     operand = static_cast<int>(dist(e2));
     // coefficients are in interval -5, 5
-    auto result = compute_mean_std(-5.0, 5.0);
+    auto result = compute_mean_std(-4.0, 4.0);
     std::normal_distribution<float> normal_dist_values(result.first, result.second);
     value = normal_dist_values(e2);
 

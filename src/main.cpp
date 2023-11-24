@@ -164,8 +164,8 @@ int main(int argc, char **argv) {
 
         population->prepareForFitFunction(data.second->x);
 
-        for (int epoch = 0; epoch < 100; ++epoch) {
-            create_one_generation(population, data, epoch % 10);
+        for (int epoch = 0; epoch < 1000; ++epoch) {
+            create_one_generation(population, data, epoch % 20);
             std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
         }
     }
