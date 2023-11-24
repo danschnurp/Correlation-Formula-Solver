@@ -12,12 +12,12 @@
 
 using namespace vuh;
 namespace {
-    constexpr uint32_t WORKGROUP_SIZE = 16; ///< compute shader workgroup dimension is WORKGROUP_SIZE x WORKGROUP_SIZE
+constexpr uint32_t WORKGROUP_SIZE = 32; ///< compute shader workgroup dimension is WORKGROUP_SIZE x WORKGROUP_SIZE
 
 #ifdef NDEBUG
-    constexpr bool enableValidation = false;
+constexpr bool enableValidation = false;
 #else
-    constexpr bool enableValidation = false;
+constexpr bool enableValidation = false;
 #endif
 } // namespace
 

@@ -86,7 +86,7 @@ float Population::countFitFunction(const std::vector<float> &x) {
 
 void Population::prepareForFitFunction(const std::vector<float> &y) {
     // making wavefront
-    height = 16;
+    height = 32;
     while (y.size() % height > 0) height--;
     width = y.size() / height;
 
