@@ -14,8 +14,8 @@ std::pair<float, float> compute_mean_std(float interval_start, float interval_en
 }
 
 Node::Node() {
-    // TRNG device
-    std::random_device r;
+
+  std::random_device r;
     std::default_random_engine e2(r());
 
 

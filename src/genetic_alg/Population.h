@@ -24,10 +24,10 @@ class Population {
   std::unique_ptr<ComputationUnit> fMinus;
   std::unique_ptr<ComputationUnit> fMultiply;
 
+  bool useGpu = true;
+
   // wavefront parameters
   uint32_t width, height;
-
-  std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> data;
 
   // determining x / y / Z
   std::vector<std::vector<float>> xyzVector;
@@ -75,11 +75,7 @@ class Population {
   std::vector<float> fitness_children;
   std::vector<Equation> equations_children;
 
-  /**
-   * The Population constructor initializes a population of equations and their fitness values, and creates computation units
-   * for addition, subtraction, and multiplication.
-   */
-  Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
+  Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGpu);
 
   void create_one_generation(int wave);
 

@@ -17,20 +17,20 @@ void print_time(auto start_time) {
             << std::endl;
 }
 
-Population::Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+Population::Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGPU) {
   for (int i = 0; i < populationSize; ++i) {
     equations_children.emplace_back(Equation());
   }
-
-  data = data;
+  useGpu = useGPU;
 
   xyzVector.push_back(data.first->x);
   xyzVector.push_back(data.first->y);
   xyzVector.push_back(data.first->z);
-
-  fPlus = std::make_unique<ComputationUnit>("../plus.spv", false);
-  fMinus = std::make_unique<ComputationUnit>("../minus.spv", false);
-  fMultiply = std::make_unique<ComputationUnit>("../multiply.spv", false);
+  if (useGpu) {
+    fPlus = std::make_unique<ComputationUnit>("../plus.spv", false);
+    fMinus = std::make_unique<ComputationUnit>("../minus.spv", false);
+    fMultiply = std::make_unique<ComputationUnit>("../multiply.spv", false);
+  }
 }
 
 void Population::compute_fitness() {
@@ -38,10 +38,12 @@ void Population::compute_fitness() {
   auto start_time = std::chrono::high_resolution_clock::now();
   try {
     for (Equation &item : equations_children) {
-//          fitness_children.emplace_back(
-//          countFitFunction(evaluateCPU(data.first->x, data.first->y, data.first->z, item)));
-      fitness_children.emplace_back(
-          countFitFunction(evaluate(item)));
+      if (useGpu) fitness_children.emplace_back(countFitFunction(evaluate(item)));
+      else
+        fitness_children.emplace_back(countFitFunction(evaluateCPU(xyzVector[0],
+                                                                   xyzVector[1],
+                                                                   xyzVector[2],
+                                                                   item)));
     }
   }
   catch (...) {
@@ -76,10 +78,6 @@ void Population::create_one_generation(int wave) {
   std::cout << "average population fitness after selection: " << mean(fitness) << std::endl;
   // crossbreeding
   auto start_time = std::chrono::high_resolution_clock::now();
-  std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(equations.begin(), equations.end(), g);
-  std::cout << "started crossbreeding... " << std::endl;
   std::vector<Equation> children = crossbreed();
   std::cout << "children: " << children.size() << std::endl;
   // completes population
@@ -104,30 +102,37 @@ std::ostream &operator<<(std::ostream &os, const Population &population) {
 }
 
 std::vector<Equation> Population::crossbreed() {
+  auto selected = equations;
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(selected.begin(), selected.end(), g);
+  std::cout << "started crossbreeding... " << std::endl;
+
   // lucky one fucks twice
-  if (equations.size() % 2 == 1) {
-    equations.push_back(equations[equations.size() - 1]);
-    fitness.push_back(fitness[fitness.size() - 1]);
+  if (selected.size() % 2 == 1) {
+    selected.push_back(selected[selected.size() - 1]);
+
   }
-  std::vector<Equation> firstHalf(equations.size() / 2);
-  std::copy(equations.begin(), equations.end() - equations.size() / 2, firstHalf.begin());
-  std::vector<Equation> secondHalf(equations.size() / 2);
-  std::copy(equations.end() - equations.size() / 2, equations.end(), secondHalf.begin());
+
+  std::vector<Equation> firstHalf(selected.size() / 2);
+  std::copy(selected.begin(), selected.end() - selected.size() / 2, firstHalf.begin());
+  std::vector<Equation> secondHalf(selected.size() / 2);
+  std::copy(selected.end() - selected.size() / 2, selected.end(), secondHalf.begin());
   std::vector<Equation> children;
 
   std::random_device r;
   std::default_random_engine e2(r());
-  for (int i = 0; i < equations.size() / 2; ++i) {
+  for (int i = 0; i < selected.size() / 2; ++i) {
     // random crossover points
-        std::uniform_int_distribution<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
-        int firstCrossbreedingPoint = static_cast<int>(uni_dist(e2));
-        std::uniform_int_distribution<int> uni_dist2(0, firstHalf[i].nodes.size() - 1);
-        int secondCrossbreedingPoint = static_cast<int>(uni_dist2(e2));
-      // new chromosomes
-        std::vector<Node> tempNodes(firstCrossbreedingPoint);
-        std::vector<Node> tempNodes2(secondCrossbreedingPoint);
+    std::uniform_int_distribution<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
+    int firstCrossbreedingPoint = static_cast<int>(uni_dist(e2));
+    std::uniform_int_distribution<int> uni_dist2(0, firstHalf[i].nodes.size() - 1);
+    int secondCrossbreedingPoint = static_cast<int>(uni_dist2(e2));
+    // new chromosomes
+    std::vector<Node> tempNodes(firstCrossbreedingPoint);
+    std::vector<Node> tempNodes2(secondCrossbreedingPoint);
 
-        children.emplace_back();
+    children.emplace_back();
         children[children.size()-1].nodes.clear();
         for (auto &item: tempNodes) {
             children[children.size() -1].nodes.push_back(item);

@@ -35,6 +35,7 @@ ComputationUnit::ComputationUnit(const std::string &shaderPath, bool printDevice
   physDevice = instance.enumeratePhysicalDevices()[0]; // just use the first device
 
   if (printDeviceInfo) {
+    std::cout << "--------------------------------------" << std::endl;
     VkPhysicalDeviceProperties deviceProperties;
     vkGetPhysicalDeviceProperties(physDevice, &deviceProperties);
 

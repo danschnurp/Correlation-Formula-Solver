@@ -17,7 +17,14 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
   normalize(data.second->x);
   if (acc_filename.find("_cleared.csv") == std::string::npos) {
     remove_redundant(data);
-    save_cleared_ACC_data("../data/ACC_007_cleared.csv", data.first);
+    acc_filename.pop_back();
+    acc_filename.pop_back();
+    acc_filename.pop_back();
+    acc_filename.pop_back();
+    save_cleared_ACC_data(acc_filename + "_cleared.csv", data.first);
+    std::cout << std::endl << std::endl << "created " << acc_filename << "_cleared.csv ... you can use it for nex run"
+              << std::endl << std::endl;
+
   }
   interpolate(data);
 }
