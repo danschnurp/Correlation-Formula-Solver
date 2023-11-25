@@ -7,88 +7,19 @@
 #include "genetic_alg/Population.h"
 #include <memory>
 
-void print_time(auto start_time) {
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = static_cast<time_t>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
-    auto duration_t = localtime(&duration);
-    std::cout << "Time taken: " <<  duration_t->tm_min << " min " << duration_t->tm_sec << " sec" << std::endl  << std::endl;
-}
-
-void create_one_generation(std::unique_ptr<Population> &population, auto &data, int wave) {
-  std::cout << "starting correlation compute... " << std::endl;
-  std::vector<float> population_results;
-
-  auto start_time = std::chrono::high_resolution_clock::now();
-  try {
-    for (Equation &item : population->equations) {
-
-//          population_results.emplace_back(population->countFitFunction(population->evaluateCPU(data.first->x, data.first->y, data.first->z, item)));
-      population_results.emplace_back(population->countFitFunction(population->evaluate(data.first->x,
-                                                                                        data.first->y,
-                                                                                        data.first->z,
-                                                                                        item)));
-    }
-  }
-  catch (...) {
-    std::cout << "..." << std::endl;
-    throw std::runtime_error("...");
-  }
-  print_time(start_time);
-  // selection based on fit function
-  std::cout << "average fitness: " << mean(population_results) << std::endl;
-  float mean_result = mean(population_results);
-  for (int j = 0; j < population->equations.size(); ++j) {
-    if (population_results[j] - population->fitness[j] <= (mean_result + mean_result / 45 * (1 + wave))) {
-      population->equations[j].root = std::numeric_limits<float>::max();
-      population_results[j] = std::numeric_limits<float>::max();
-    }
-  }
-  std::erase_if(population->equations, [](Equation &value) { return value.root == std::numeric_limits<float>::max(); });
-  std::erase_if(population_results, [](float &value) { return value == std::numeric_limits<float>::max(); });
-  // print stats
-  auto index_max = std::max_element(population_results.begin(), population_results.end());
-  int index_m = std::distance(population_results.begin(), index_max);
-  std::cout << "max fitness: " << population_results[index_m] << std::endl;
-  std::cout << "best local equation: " << population->equations[index_m] << std::endl;
-  std::cout << "parents population size: " << population->equations.size() << std::endl;
-  std::cout << "average population fitness after selection: " << mean(population_results) << std::endl;
-  // crossbreeding
-  start_time = std::chrono::high_resolution_clock::now();
-  std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(population->equations.begin(), population->equations.end(), g);
-  population->equations = population->equations;
-  std::cout << "started crossbreeding... " << std::endl;
-  std::vector<Equation> children = population->crossbreed();
-  std::cout << "children: " << children.size() << std::endl;
-  // completes population todo why compute again fit on parents
-  if (population->populationSize - population->equations.size() < children.size()) {
-    for (int j = 0; j < population->populationSize - population->equations.size(); ++j) {
-      population->equations.push_back(children[j]);
-    }
-  } else {
-    for (auto &item : children) population->equations.push_back(item);
-        for (int j = 0; j < population->populationSize - population->equations.size(); ++j) {
-            population->equations.emplace_back();
-        }
-    }
-    print_time(start_time);
-
-
-}
-
 int main(int argc, char **argv) {
 
 
-//todo
+//todo parameters
 // input data path
 //  cleared acc or no
 // GPU device to run
 // GPU workgroup size
 // precompile spirv  check
-// refactor gpu computation unit
 // equation xyz interval
 // evaluate on cpu or on gpu
+
+// todo refactor gpu computation unit
 
 
 
@@ -135,13 +66,13 @@ int main(int argc, char **argv) {
 
         std::cout << "clean acc " << data.first->x.size() << std::endl;
         print_time(start_time);
-        auto population = std::make_unique<Population>();
+      auto population = std::make_unique<Population>(data);
 
         population->prepareForFitFunction(data.second->x);
 
         for (int epoch = 0; epoch < 1000; ++epoch) {
-            create_one_generation(population, data, epoch % 20);
-            std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
+          population->create_one_generation(epoch % 20);
+          std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
         }
     }
         catch (std::exception & err)
