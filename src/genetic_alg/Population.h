@@ -26,11 +26,17 @@ class Population {
 
   bool useGpu = true;
 
+  float minimumEquationCoefficients;
+  float maximumEquationCoefficients;
+  float maximumEquationInitLength;
+
   // wavefront parameters
   uint32_t width, height;
 
   // determining x / y / Z
   std::vector<std::vector<float>> xyzVector;
+
+  void selectMean(float mean_result, int wave);
 
   /**
  * The function calculates the Pearson correlation coefficient between the input vector and precomputed labels.
@@ -75,7 +81,9 @@ class Population {
   std::vector<float> fitness_children;
   std::vector<Equation> equations_children;
 
-  Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGpu);
+  Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGpu, int WORKGROUP_SIZE,
+             float minimumEquationCoefficients, float maximumEquationCoefficients,
+             float maximumEquationInitLength);
 
   void create_one_generation(int wave);
 
@@ -87,7 +95,7 @@ class Population {
  *
  * @param y The parameter "y" is a vector of floats representing a set of labels or target values.
  */
-  void prepareForFitFunction(const std::vector<float> &y);
+  void prepareForFitFunction(const std::vector<float> &y, int WORKGROUP_SIZE);
 };
 
 

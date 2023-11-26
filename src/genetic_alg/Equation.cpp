@@ -5,21 +5,23 @@
 #include "Equation.h"
 #include "../gpu/ComputationUnit.h"
 
-Equation::Equation() {
+Equation::Equation(float minimumEquationCoefficients,
+                   float maximumEquationCoefficients,
+                   float maximumEquationInitLength) {
 
-    std::random_device r;
-    std::default_random_engine e2(r());
+  std::random_device r;
+  std::default_random_engine e2(r());
 
-    // coefficients are in interval -5, 5
-    auto result = compute_mean_std(-5.0, 5.0);
-    std::normal_distribution<float> normal_dist_values(result.first, result.second);
-    root = normal_dist_values(e2);
+  // coefficients are in interval -5, 5
+  auto result = compute_mean_std(minimumEquationCoefficients, maximumEquationCoefficients);
+  std::normal_distribution<float> normal_dist_values(result.first, result.second);
+  root = normal_dist_values(e2);
 
-    // initial length of equation is 3 - 7
-    result = compute_mean_std(3.0, 7);
+  // initial length of equation is 3 - 7
+  result = compute_mean_std(3.0, maximumEquationInitLength);
     std::normal_distribution<float> normal_dist_len(result.first, result.second);
     for (int i = 0; i < static_cast<int>(round(normal_dist_len(e2))); ++i) {
-        nodes.emplace_back();
+      nodes.emplace_back(minimumEquationCoefficients, maximumEquationCoefficients);
     }
 }
 

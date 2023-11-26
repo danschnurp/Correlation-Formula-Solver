@@ -13,17 +13,16 @@ std::pair<float, float> compute_mean_std(float interval_start, float interval_en
     return std::make_pair(mean, std_deviation);
 }
 
-Node::Node() {
+Node::Node(float minimumEquationCoefficients, float maximumEquationCoefficients) {
 
   std::random_device r;
-    std::default_random_engine e2(r());
+  std::default_random_engine e2(r());
 
-
-    std::uniform_int_distribution<int> dist(0, 2);
-    operand = static_cast<int>(dist(e2));
-    // coefficients are in interval -5, 5
-    auto result = compute_mean_std(-4.0, 4.0);
-    std::normal_distribution<float> normal_dist_values(result.first, result.second);
+  std::uniform_int_distribution<int> dist(0, 2);
+  operand = static_cast<int>(dist(e2));
+  // coefficients are in interval -5, 5
+  auto result = compute_mean_std(minimumEquationCoefficients, maximumEquationCoefficients);
+  std::normal_distribution<float> normal_dist_values(result.first, result.second);
     value = normal_dist_values(e2);
 
 

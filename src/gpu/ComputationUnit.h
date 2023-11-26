@@ -29,26 +29,26 @@ public: // data
     vk::PipelineCache pipeCache;
     vk::PipelineLayout pipeLayout;
 
-    vk::Pipeline pipe;
-    mutable vk::CommandBuffer
-            cmdBuffer;
+  vk::Pipeline pipe;
+  mutable vk::CommandBuffer
+      cmdBuffer;
 
-    uint32_t compute_queue_familly_id;
-public:
-    explicit ComputationUnit(const std::string &shaderPath, bool printDeviceInfo);
+  uint32_t compute_queue_familly_id;
+ public:
+  explicit ComputationUnit(const std::string &shaderPath, bool printDeviceInfo, int WORKGROUP_SIZE);
   ~ComputationUnit() noexcept;
 
-    auto compute(vk::Buffer &out, const vk::Buffer &in, const PushParams &p) const -> void;
+  auto compute(vk::Buffer &out, const vk::Buffer &in, const PushParams &p) -> void;
+  int WORKGROUP_SIZE;
+ private:
 
-private:
-
-    static auto createCommandBuffer(const vk::Device &device,
-                                    const vk::CommandPool &cmdPool,
-                                    const vk::Pipeline &pipeline,
-                                    const vk::PipelineLayout &pipeLayout,
-                                    const vk::DescriptorSet &dscSet,
-                                    const PushParams &p
-    ) -> vk::CommandBuffer;
+  auto createCommandBuffer(const vk::Device &device,
+                           const vk::CommandPool &cmdPool,
+                           const vk::Pipeline &pipeline,
+                           const vk::PipelineLayout &pipeLayout,
+                           const vk::DescriptorSet &dscSet,
+                           const PushParams &p
+  ) -> vk::CommandBuffer;
 };
 
 #endif //PPR_COMPUTATIONUNIT_H

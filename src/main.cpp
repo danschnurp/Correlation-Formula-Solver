@@ -7,6 +7,8 @@
 #include "genetic_alg/Population.h"
 #include <memory>
 #include <filesystem>
+#include "genetic_alg/Node.h"
+#include "genetic_alg/Equation.h"
 
 struct Options {
   std::string dataPathHR;
@@ -23,7 +25,7 @@ struct Options {
 };
 
 void printHelp() {
-  std::cout << "Usage: ppr(.exe) --data_path_hr <path_HR> --data_path_acc <path_ACC> [--use_GPU]\n";
+  std::cout << "Usage: ppr(.exe) --data_path_hr <path_HR> --data_path_acc <path_ACC> [--not_use_gpu]\n";
 }
 
 Options parseArgs(int argc, char *argv[]) {
@@ -67,7 +69,7 @@ Options parseArgs(int argc, char *argv[]) {
   return options;
 }
 
-void vulkan_corectness_test(std::string &shader_dir) {
+void vulkan_corectness_test(std::string &shader_dir, int WORKGROUP_SIZE) {
   const auto width = 90;
   const auto height = 60;
   const auto a = 2.0f; // saxpy scaling factor
@@ -76,7 +78,7 @@ void vulkan_corectness_test(std::string &shader_dir) {
   auto x = std::vector<float>(width * height, 0.65f);
 
   std::cout << "VULKAN correctness demo:" << std::endl;
-  ComputationUnit f(shader_dir + "saxpy.spv", true);
+  ComputationUnit f(shader_dir + "saxpy.spv", true, WORKGROUP_SIZE);
   auto d_y = vuh::Array<float>::fromHost(y, f.device, f.physDevice);
   auto d_x = vuh::Array<float>::fromHost(x, f.device, f.physDevice);
   f.compute(d_y, d_x, {width, height, a});
@@ -104,6 +106,9 @@ int main(int argc, char **argv) {
     std::cout << "shader " << options.shadersDir + "multiply.spv" << " exists: "
               << std::filesystem::exists(options.shadersDir + "multiply.spv") << std::endl;
   }
+
+  int WORKGROUP_SIZE = options.workgroupSize;
+
   std::cout << "minimum_equation_coefficients: " << options.minimumEquationCoefficients << std::endl;
   std::cout << "maximum_equation_coefficients: " << options.maximumEquationCoefficients << std::endl;
   std::cout << "maximum_equation_init_length: " << options.maximumEquationInitLength << std::endl << std::endl;
@@ -111,14 +116,9 @@ int main(int argc, char **argv) {
 
   // todo refactor gpu computation unit
 
-  // todo use parameters   float minimumEquationCoefficients = -5.0;
-  //  float maximumEquationCoefficients = 5.0;
-  //  float maximumEquationInitLength = 10;
-  //  workgroupSize
 
 
-
-  if (options.useGPU) vulkan_corectness_test(options.shadersDir);
+  if (options.useGPU) vulkan_corectness_test(options.shadersDir, WORKGROUP_SIZE);
 
   try {
     std::cout << std::endl << "starting... " << std::endl;
@@ -136,24 +136,29 @@ int main(int argc, char **argv) {
     }
     std::cout << "loaded hr " << data.second->x.size() << std::endl;
     std::cout << "loaded acc " << data.first->x.size() << std::endl;
-        print_time(start_time);
+    print_time(start_time);
 
-        start_time = std::chrono::high_resolution_clock::now();
-        //  performing some preprocessing steps on the data before it is used further
-        preprocess(data, acc_filename);
+    start_time = std::chrono::high_resolution_clock::now();
+    //  performing some preprocessing steps on the data before it is used further
+    preprocess(data, acc_filename);
 
-        std::cout << "clean acc " << data.first->x.size() << std::endl;
+    std::cout << "clean acc " << data.first->x.size() << std::endl;
     std::cout << "clean hr " << data.second->x.size() << std::endl;
     print_time(start_time);
-    auto population = std::make_unique<Population>(data, options.useGPU);
+    auto population = std::make_unique<Population>(data,
+                                                   options.useGPU,
+                                                   WORKGROUP_SIZE,
+                                                   options.minimumEquationCoefficients,
+                                                   options.maximumEquationCoefficients,
+                                                   options.maximumEquationInitLength);
 
-        population->prepareForFitFunction(data.second->x);
+    population->prepareForFitFunction(data.second->x, WORKGROUP_SIZE);
 
-        for (int epoch = 0; epoch < 1000; ++epoch) {
-          population->create_one_generation(epoch % 20);
-          std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
-        }
+    for (int epoch = 0; epoch < 1000; ++epoch) {
+      population->create_one_generation(epoch % 20);
+      std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
     }
+  }
         catch (std::exception & err)
         {
             std::cerr << std::endl << err.what() << std::endl;

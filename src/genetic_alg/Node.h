@@ -20,7 +20,7 @@ public:
     int operand;
     int xyz;
 
-    Node();
+    Node(float minimumEquationCoefficients, float maximumEquationCoefficients);
 };
 
 

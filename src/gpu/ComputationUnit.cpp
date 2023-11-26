@@ -12,7 +12,7 @@
 
 using namespace vuh;
 namespace {
-constexpr uint32_t WORKGROUP_SIZE = 32; ///< compute shader workgroup dimension is WORKGROUP_SIZE x WORKGROUP_SIZE
+
 
 #ifdef NDEBUG
 constexpr bool enableValidation = false;
@@ -23,12 +23,13 @@ constexpr bool enableValidation = false;
 
 
 /// Constructor
-ComputationUnit::ComputationUnit(const std::string &shaderPath, bool printDeviceInfo) {
+ComputationUnit::ComputationUnit(const std::string &shaderPath, bool printDeviceInfo, int WORKGROUP_SIZE_param) {
   auto appInfo = vk::ApplicationInfo("PPR Compute app",
                                      0,
                                      "no_engine",
                                      0,
                                      VK_API_VERSION_1_0); // The only important field here is apiVersion
+  WORKGROUP_SIZE = WORKGROUP_SIZE_param;
   auto createInfo = vk::InstanceCreateInfo(vk::InstanceCreateFlags(), &appInfo, {}, {});
   instance = vk::createInstance(createInfo);
   // Print device information.
@@ -119,17 +120,17 @@ ComputationUnit::~ComputationUnit() noexcept {
 
 ///
 auto ComputationUnit::compute(vk::Buffer &out, const vk::Buffer &in, const ComputationUnit::PushParams &p
-) const -> void {
+) -> void {
 
-    auto descriptorSetAI = vk::DescriptorSetAllocateInfo(dscPool, 1, &dscLayout);
-    auto dscSet = device.allocateDescriptorSets(descriptorSetAI)[0];
+  auto descriptorSetAI = vk::DescriptorSetAllocateInfo(dscPool, 1, &dscLayout);
+  auto dscSet = device.allocateDescriptorSets(descriptorSetAI)[0];
 
-    auto outInfo = vk::DescriptorBufferInfo(out, 0, sizeof(float) * (p.width * p.height));
-    auto inInfo = vk::DescriptorBufferInfo(in, 0, sizeof(float) * (p.width * p.height));
+  auto outInfo = vk::DescriptorBufferInfo(out, 0, sizeof(float) * (p.width * p.height));
+  auto inInfo = vk::DescriptorBufferInfo(in, 0, sizeof(float) * (p.width * p.height));
 
-    auto writeDsSets = std::array<vk::WriteDescriptorSet, NumDescriptors>{{
-                                                                                  {dscSet, 0, 0, 1,
-                                                                                   vk::DescriptorType::eStorageBuffer,
+  auto writeDsSets = std::array<vk::WriteDescriptorSet, NumDescriptors>{{
+                                                                            {dscSet, 0, 0, 1,
+                                                                             vk::DescriptorType::eStorageBuffer,
                                                                                    nullptr, &outInfo},
                                                                                   {dscSet, 1, 0, 1,
                                                                                    vk::DescriptorType::eStorageBuffer,

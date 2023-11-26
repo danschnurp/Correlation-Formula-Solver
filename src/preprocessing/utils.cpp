@@ -49,6 +49,7 @@ void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>
             for (int j = 0; j < interpolate_counter + 1; ++j) {
                 interpolated.emplace_back(start + j * step);
             }
+            // todo here is bug
             hr_counter++;
             interpolate_counter = 0;
             curr = i;

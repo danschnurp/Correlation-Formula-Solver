@@ -17,19 +17,25 @@ void print_time(auto start_time) {
             << std::endl;
 }
 
-Population::Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGPU) {
+Population::Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGPU,
+                       int WORKGROUP_SIZE, float minimumEquationCoefficients, float maximumEquationCoefficients,
+                       float maximumEquationInitLength) {
   for (int i = 0; i < populationSize; ++i) {
-    equations_children.emplace_back(Equation());
+    equations_children.emplace_back(Equation(minimumEquationCoefficients, maximumEquationCoefficients,
+                                             maximumEquationInitLength));
   }
   useGpu = useGPU;
+  minimumEquationCoefficients = minimumEquationCoefficients;
+  maximumEquationCoefficients = maximumEquationCoefficients;
+  maximumEquationInitLength = maximumEquationInitLength;
 
   xyzVector.push_back(data.first->x);
   xyzVector.push_back(data.first->y);
   xyzVector.push_back(data.first->z);
   if (useGpu) {
-    fPlus = std::make_unique<ComputationUnit>("../plus.spv", false);
-    fMinus = std::make_unique<ComputationUnit>("../minus.spv", false);
-    fMultiply = std::make_unique<ComputationUnit>("../multiply.spv", false);
+    fPlus = std::make_unique<ComputationUnit>("../plus.spv", false, WORKGROUP_SIZE);
+    fMinus = std::make_unique<ComputationUnit>("../minus.spv", false, WORKGROUP_SIZE);
+    fMultiply = std::make_unique<ComputationUnit>("../multiply.spv", false, WORKGROUP_SIZE);
   }
 }
 
@@ -53,22 +59,28 @@ void Population::compute_fitness() {
   print_time(start_time);
 }
 
-void Population::create_one_generation(int wave) {
-  compute_fitness();
-  std::copy(fitness_children.begin(), fitness_children.end(), std::back_inserter(fitness));
-  std::copy(equations_children.begin(), equations_children.end(), std::back_inserter(equations));
-  fitness_children.clear();
-  equations_children.clear();
-  float mean_result = mean(fitness);
+void Population::selectMean(float mean_result, int wave) {
   // selection based on mean like result
   for (int j = 0; j < equations.size(); ++j) {
-    if (fitness[j] <= (mean_result + mean_result / 10 * (1 + wave))) {
+    if (fitness[j] <= (mean_result * (1 + wave))) {
       equations[j].root = std::numeric_limits<float>::max();
       fitness[j] = std::numeric_limits<float>::max();
     }
   }
   std::erase_if(equations, [](Equation &value) { return value.root == std::numeric_limits<float>::max(); });
   std::erase_if(fitness, [](float &value) { return value == std::numeric_limits<float>::max(); });
+}
+
+void Population::create_one_generation(int wave) {
+  compute_fitness();
+  std::copy(fitness_children.begin(), fitness_children.end(), std::back_inserter(fitness));
+  std::copy(equations_children.begin(), equations_children.end(), std::back_inserter(equations));
+  fitness_children.clear();
+  equations_children.clear();
+
+  float mean_result = mean(fitness);
+  selectMean(mean_result + mean_result / 10, wave);
+
   // print stats
   auto index_max = std::max_element(fitness.begin(), fitness.end());
   int index_m = std::distance(fitness.begin(), index_max);
@@ -76,10 +88,23 @@ void Population::create_one_generation(int wave) {
   std::cout << "best local equation: " << equations[index_m] << std::endl;
   std::cout << "parents population size: " << equations.size() << std::endl;
   std::cout << "average population fitness after selection: " << mean(fitness) << std::endl;
+
   // crossbreeding
   auto start_time = std::chrono::high_resolution_clock::now();
   std::vector<Equation> children = crossbreed();
   std::cout << "children: " << children.size() << std::endl;
+
+  mean_result = mean(fitness);
+  selectMean(mean_result + mean_result / 10, wave);
+
+  // print stats
+  index_max = std::max_element(fitness.begin(), fitness.end());
+  index_m = std::distance(fitness.begin(), index_max);
+  std::cout << "max fitness after plague: " << fitness[index_m] << std::endl;
+  std::cout << "best local equation after plague: " << equations[index_m] << std::endl;
+  std::cout << "parents population size after plague: " << equations.size() << std::endl;
+  std::cout << "average population fitness after selection after plague: " << mean(fitness) << std::endl;
+
   // completes population
   if (populationSize - equations.size() < children.size()) {
     for (int j = 0; j < populationSize - equations.size(); ++j) {
@@ -88,7 +113,8 @@ void Population::create_one_generation(int wave) {
   } else {
     for (auto &item : children) equations_children.push_back(item);
     for (int j = 0; j < populationSize - equations_children.size(); ++j) {
-      equations_children.emplace_back();
+      equations_children.emplace_back(minimumEquationCoefficients, maximumEquationCoefficients,
+                                      maximumEquationInitLength);
     }
   }
   print_time(start_time);
@@ -114,10 +140,10 @@ std::vector<Equation> Population::crossbreed() {
 
   }
 
-  std::vector<Equation> firstHalf(selected.size() / 2);
-  std::copy(selected.begin(), selected.end() - selected.size() / 2, firstHalf.begin());
-  std::vector<Equation> secondHalf(selected.size() / 2);
-  std::copy(selected.end() - selected.size() / 2, selected.end(), secondHalf.begin());
+  std::vector<Equation> firstHalf;
+  std::copy(selected.begin(), selected.end() - selected.size() / 2, std::back_inserter(firstHalf));
+  std::vector<Equation> secondHalf;
+  std::copy(selected.end() - selected.size() / 2, selected.end(), std::back_inserter(secondHalf));
   std::vector<Equation> children;
 
   std::random_device r;
@@ -126,21 +152,28 @@ std::vector<Equation> Population::crossbreed() {
     // random crossover points
     std::uniform_int_distribution<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
     int firstCrossbreedingPoint = static_cast<int>(uni_dist(e2));
-    std::uniform_int_distribution<int> uni_dist2(0, firstHalf[i].nodes.size() - 1);
+    std::uniform_int_distribution<int> uni_dist2(0, secondHalf[i].nodes.size() - 1);
     int secondCrossbreedingPoint = static_cast<int>(uni_dist2(e2));
-    // new chromosomes
-    std::vector<Node> tempNodes(firstCrossbreedingPoint);
-    std::vector<Node> tempNodes2(secondCrossbreedingPoint);
+    // first child
+    children.emplace_back(minimumEquationCoefficients, maximumEquationCoefficients, maximumEquationInitLength);
+    children[children.size() - 1].nodes.clear();
+    std::copy(firstHalf[i].nodes.begin(),
+              firstHalf[i].nodes.begin() + firstCrossbreedingPoint,
+              std::back_inserter(children[children.size() - 1].nodes));
+    std::copy(secondHalf[i].nodes.begin() + secondCrossbreedingPoint,
+              secondHalf[i].nodes.end(),
+              std::back_inserter(children[children.size() - 1].nodes));
+    // second child
+    children.emplace_back(minimumEquationCoefficients, maximumEquationCoefficients, maximumEquationInitLength);
+    children[children.size() - 1].nodes.clear();
+    std::copy(secondHalf[i].nodes.begin(),
+              secondHalf[i].nodes.begin() + secondCrossbreedingPoint,
+              std::back_inserter(children[children.size() - 1].nodes));
+    std::copy(firstHalf[i].nodes.begin() + firstCrossbreedingPoint,
+              firstHalf[i].nodes.end(),
+              std::back_inserter(children[children.size() - 1].nodes));
 
-    children.emplace_back();
-        children[children.size()-1].nodes.clear();
-        for (auto &item: tempNodes) {
-            children[children.size() -1].nodes.push_back(item);
-        }
-        for (auto &item: tempNodes2) {
-            children[children.size()-1].nodes.push_back(item);
-        }
-    }
+  }
     return children;
 }
 
@@ -170,17 +203,17 @@ float Population::countFitFunction(const std::vector<float> &x) {
     return std::abs(covXY / (std::sqrt(varX) * varLabels));
 }
 
-void Population::prepareForFitFunction(const std::vector<float> &y) {
-    // making wavefront
-    height = 32;
-    while (y.size() % height > 0) height--;
-    width = y.size() / height;
+void Population::prepareForFitFunction(const std::vector<float> &y, int WORKGROUP_SIZE) {
+  // making wavefront
+  height = WORKGROUP_SIZE;
+  while (y.size() % height > 0) height--;
+  width = y.size() / height;
 
-    float meanLabels = mean(y);
-    for (const auto &item: y) {
-        precomputedLabels.emplace_back(item - meanLabels);
-    }
-    for (const auto &item: y) {
+  float meanLabels = mean(y);
+  for (const auto &item : y) {
+    precomputedLabels.emplace_back(item - meanLabels);
+  }
+  for (const auto &item : y) {
         varLabels += (item - meanLabels) * (item - meanLabels);
     }
     varLabels = std::sqrt(varLabels);

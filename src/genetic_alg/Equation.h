@@ -24,7 +24,7 @@ public:
     float root;
     std::vector<Node> nodes;
 
-    Equation();
+    Equation(float minimumEquationCoefficients, float maximumEquationCoefficients, float maximumEquationInitLength);
 
     friend std::ostream &operator<<(std::ostream &os, const Equation &equation);
 
