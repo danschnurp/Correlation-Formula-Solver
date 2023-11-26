@@ -36,7 +36,7 @@ class Population {
   // determining x / y / Z
   std::vector<std::vector<float>> xyzVector;
 
-  void selectMean(float mean_result, int wave);
+  void selectMean(float mean_result);
 
   /**
  * The function calculates the Pearson correlation coefficient between the input vector and precomputed labels.

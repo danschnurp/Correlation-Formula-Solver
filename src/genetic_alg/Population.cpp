@@ -18,16 +18,18 @@ void print_time(auto start_time) {
 }
 
 Population::Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGPU,
-                       int WORKGROUP_SIZE, float minimumEquationCoefficients, float maximumEquationCoefficients,
-                       float maximumEquationInitLength) {
+                       int WORKGROUP_SIZE, float minimumEquationCoefficientsp, float maximumEquationCoefficientsp,
+                       float maximumEquationInitLengthp) {
+
+  minimumEquationCoefficients = minimumEquationCoefficientsp;
+  maximumEquationCoefficients = maximumEquationCoefficientsp;
+  maximumEquationInitLength = maximumEquationInitLengthp;
+
   for (int i = 0; i < populationSize; ++i) {
     equations_children.emplace_back(Equation(minimumEquationCoefficients, maximumEquationCoefficients,
                                              maximumEquationInitLength));
   }
   useGpu = useGPU;
-  minimumEquationCoefficients = minimumEquationCoefficients;
-  maximumEquationCoefficients = maximumEquationCoefficients;
-  maximumEquationInitLength = maximumEquationInitLength;
 
   xyzVector.push_back(data.first->x);
   xyzVector.push_back(data.first->y);
@@ -59,10 +61,10 @@ void Population::compute_fitness() {
   print_time(start_time);
 }
 
-void Population::selectMean(float mean_result, int wave) {
+void Population::selectMean(float mean_result) {
   // selection based on mean like result
   for (int j = 0; j < equations.size(); ++j) {
-    if (fitness[j] <= (mean_result * (1 + wave))) {
+    if (fitness[j] <= (mean_result)) {
       equations[j].root = std::numeric_limits<float>::max();
       fitness[j] = std::numeric_limits<float>::max();
     }
@@ -79,7 +81,7 @@ void Population::create_one_generation(int wave) {
   equations_children.clear();
 
   float mean_result = mean(fitness);
-  selectMean(mean_result + mean_result / 10, wave);
+  selectMean(mean_result * 1.25);
 
   // print stats
   auto index_max = std::max_element(fitness.begin(), fitness.end());
@@ -95,7 +97,7 @@ void Population::create_one_generation(int wave) {
   std::cout << "children: " << children.size() << std::endl;
 
   mean_result = mean(fitness);
-  selectMean(mean_result + mean_result / 10, wave);
+  selectMean(mean_result * 0.9);
 
   // print stats
   index_max = std::max_element(fitness.begin(), fitness.end());
@@ -128,7 +130,8 @@ std::ostream &operator<<(std::ostream &os, const Population &population) {
 }
 
 std::vector<Equation> Population::crossbreed() {
-  auto selected = equations;
+  std::vector<Equation> selected;
+  std::copy(equations.begin(), equations.end(), std::back_inserter(selected));
   std::random_device rd;
   std::mt19937 g(rd());
   std::shuffle(selected.begin(), selected.end(), g);
@@ -146,16 +149,18 @@ std::vector<Equation> Population::crossbreed() {
   std::copy(selected.end() - selected.size() / 2, selected.end(), std::back_inserter(secondHalf));
   std::vector<Equation> children;
 
-  std::random_device r;
-  std::default_random_engine e2(r());
-  for (int i = 0; i < selected.size() / 2; ++i) {
+  std::random_device r2;
+  std::default_random_engine e2(r2());
+  for (int i = 0; i < firstHalf.size(); ++i) {
     // random crossover points
     std::uniform_int_distribution<int> uni_dist(0, firstHalf[i].nodes.size() - 1);
     int firstCrossbreedingPoint = static_cast<int>(uni_dist(e2));
     std::uniform_int_distribution<int> uni_dist2(0, secondHalf[i].nodes.size() - 1);
     int secondCrossbreedingPoint = static_cast<int>(uni_dist2(e2));
     // first child
-    children.emplace_back(minimumEquationCoefficients, maximumEquationCoefficients, maximumEquationInitLength);
+    children.emplace_back(Equation(minimumEquationCoefficients,
+                                   maximumEquationCoefficients,
+                                   maximumEquationInitLength));
     children[children.size() - 1].nodes.clear();
     std::copy(firstHalf[i].nodes.begin(),
               firstHalf[i].nodes.begin() + firstCrossbreedingPoint,
@@ -164,7 +169,9 @@ std::vector<Equation> Population::crossbreed() {
               secondHalf[i].nodes.end(),
               std::back_inserter(children[children.size() - 1].nodes));
     // second child
-    children.emplace_back(minimumEquationCoefficients, maximumEquationCoefficients, maximumEquationInitLength);
+    children.emplace_back(Equation(minimumEquationCoefficients,
+                                   maximumEquationCoefficients,
+                                   maximumEquationInitLength));
     children[children.size() - 1].nodes.clear();
     std::copy(secondHalf[i].nodes.begin(),
               secondHalf[i].nodes.begin() + secondCrossbreedingPoint,

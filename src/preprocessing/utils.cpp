@@ -21,12 +21,24 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
     acc_filename.pop_back();
     acc_filename.pop_back();
     acc_filename.pop_back();
-    save_cleared_ACC_data(acc_filename + "_cleared.csv", data.first);
-    std::cout << std::endl << std::endl << "created " << acc_filename << "_cleared.csv ... you can use it for nex run"
-              << std::endl << std::endl;
-
+    auto data_first = data.first;
+    auto acc_thread_saver = std::thread([data_first, acc_filename]() {
+      try {
+        save_cleared_ACC_data(acc_filename + "_cleared.csv", data_first);
+        std::cout << std::endl << std::endl << "created " << acc_filename
+                  << "_cleared.csv ... you can use it for nex run"
+                  << std::endl << std::endl;
+      }
+      catch (std::exception &err) {
+        std::cerr << std::endl << err.what() << std::endl;
+      }
+    });
+    interpolate(data);
+    if (acc_thread_saver.joinable()) {
+      acc_thread_saver.join();
+    }
   }
-  interpolate(data);
+
 }
 
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
