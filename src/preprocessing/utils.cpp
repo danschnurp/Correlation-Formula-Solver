@@ -85,12 +85,12 @@ void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Reco
 
         different = false;
 
-      } else if (data.first->timestamp[i].tm_year < data.second->timestamp[hr_counter].tm_year ||
-          data.first->timestamp[i].tm_mon < data.second->timestamp[hr_counter].tm_mon ||
-          data.first->timestamp[i].tm_mday < data.second->timestamp[hr_counter].tm_mday ||
-          data.first->timestamp[i].tm_hour < data.second->timestamp[hr_counter].tm_hour ||
-          data.first->timestamp[i].tm_min < data.second->timestamp[hr_counter].tm_min ||
-          data.first->timestamp[i].tm_sec < data.second->timestamp[hr_counter].tm_sec) {
+      } else if (data.first->timestamp[i].tm_year > data.second->timestamp[hr_counter].tm_year ||
+          data.first->timestamp[i].tm_mon > data.second->timestamp[hr_counter].tm_mon ||
+          data.first->timestamp[i].tm_mday > data.second->timestamp[hr_counter].tm_mday ||
+          data.first->timestamp[i].tm_hour > data.second->timestamp[hr_counter].tm_hour ||
+          data.first->timestamp[i].tm_min > data.second->timestamp[hr_counter].tm_min ||
+          data.first->timestamp[i].tm_sec > data.second->timestamp[hr_counter].tm_sec) {
         if (!different) hr_counter++;
         different = true;
         std::tm max_tm = {};
@@ -106,12 +106,12 @@ void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Reco
         data.first->y[i] = std::numeric_limits<float>::max();
         data.first->z[i] = std::numeric_limits<float>::max();
         data.first->microsecond[i] = std::numeric_limits<float>::max();
-      } else if (data.first->timestamp[i].tm_year > data.second->timestamp[hr_counter].tm_year ||
-          data.first->timestamp[i].tm_mon > data.second->timestamp[hr_counter].tm_mon ||
-          data.first->timestamp[i].tm_mday > data.second->timestamp[hr_counter].tm_mday ||
-          data.first->timestamp[i].tm_hour > data.second->timestamp[hr_counter].tm_hour ||
-          data.first->timestamp[i].tm_min > data.second->timestamp[hr_counter].tm_min ||
-          data.first->timestamp[i].tm_sec > data.second->timestamp[hr_counter].tm_sec) {
+      } else if (data.first->timestamp[i].tm_year < data.second->timestamp[hr_counter].tm_year ||
+          data.first->timestamp[i].tm_mon < data.second->timestamp[hr_counter].tm_mon ||
+          data.first->timestamp[i].tm_mday < data.second->timestamp[hr_counter].tm_mday ||
+          data.first->timestamp[i].tm_hour < data.second->timestamp[hr_counter].tm_hour ||
+          data.first->timestamp[i].tm_min < data.second->timestamp[hr_counter].tm_min ||
+          data.first->timestamp[i].tm_sec < data.second->timestamp[hr_counter].tm_sec) {
         i--;
         different = true;
         std::tm max_tm = {};
