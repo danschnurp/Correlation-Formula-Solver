@@ -95,9 +95,9 @@ void Population::create_one_generation(int wave) {
   auto start_time = std::chrono::high_resolution_clock::now();
   std::vector<Equation> children = crossbreed();
   std::cout << "children: " << children.size() << std::endl;
-
-  mean_result = mean(fitness);
-  selectMean(mean_result * 0.9);
+//
+//  mean_result = mean(fitness);
+//  selectMean(mean_result * 0.9);
 
   // print stats
   index_max = std::max_element(fitness.begin(), fitness.end());
