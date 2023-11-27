@@ -77,8 +77,8 @@ void vulkan_corectness_test(std::string &shader_dir, int WORKGROUP_SIZE) {
   auto y = std::vector<float>(width * height, 0.71f);
   auto x = std::vector<float>(width * height, 0.65f);
 
-  std::cout << "VULKAN correctness demo:" << std::endl;
-  ComputationUnit f(shader_dir + "saxpy.spv", true, WORKGROUP_SIZE);
+  std::cout << "VULKAN correctness test:" << std::endl;
+  ComputationUnit f(shader_dir + "plus.spv", true, WORKGROUP_SIZE);
   auto d_y = vuh::Array<float>::fromHost(y, f.device, f.physDevice);
   auto d_x = vuh::Array<float>::fromHost(x, f.device, f.physDevice);
   f.compute(d_y, d_x, {width, height, a});

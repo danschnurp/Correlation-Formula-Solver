@@ -10,6 +10,8 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
                 std::string &acc_filename) {
   std::cout << "starting preprocess... " << std::endl;
   if (acc_filename.find("_cleared.csv") == std::string::npos) {
+
+    reduce_to_seconds(data);
     remove_redundant(data);
 //    acc_filename.pop_back();
 //    acc_filename.pop_back();
@@ -27,7 +29,7 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
   normalize(data.first->y);
   normalize(data.first->z);
   normalize(data.second->x);
-  interpolate(data);
+//  interpolate(data);
 }
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
   int interpolate_counter = 0;
@@ -59,74 +61,45 @@ void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>
         throw std::runtime_error{"bad computation!!!"};
 }
 
-void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+void remove_redundant_acc(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
 
-    int hr_counter = 0;
-  bool different = true;
+  int hr_counter = 0;
+  std::tm max_tm1 = {};
+  // Set the maximum representable values for some members
+  max_tm1.tm_sec = std::numeric_limits<int>::max();
+  max_tm1.tm_min = std::numeric_limits<int>::max();
+  max_tm1.tm_hour = std::numeric_limits<int>::max();
+  max_tm1.tm_mday = std::numeric_limits<int>::max();
+  max_tm1.tm_mon = std::numeric_limits<int>::max();
+  max_tm1.tm_year = std::numeric_limits<int>::max();
 
-    std::tm max_tm1 = {};
-    // Set the maximum representable values for some members
-    max_tm1.tm_sec = std::numeric_limits<int>::max();
-    max_tm1.tm_min = std::numeric_limits<int>::max();
-    max_tm1.tm_hour = std::numeric_limits<int>::max();
-    max_tm1.tm_mday = std::numeric_limits<int>::max();
-    max_tm1.tm_mon = std::numeric_limits<int>::max();
-    max_tm1.tm_year = std::numeric_limits<int>::max();
+  for (int i = 0; i < data.first->timestamp.size(); ++i) {
 
-    for (int i = 0; i < data.first->timestamp.size() - 1; ++i) {
-
-      if (data.first->timestamp[i].tm_year == data.second->timestamp[hr_counter].tm_year &&
-          data.first->timestamp[i].tm_mon == data.second->timestamp[hr_counter].tm_mon &&
-          data.first->timestamp[i].tm_mday == data.second->timestamp[hr_counter].tm_mday &&
-          data.first->timestamp[i].tm_hour == data.second->timestamp[hr_counter].tm_hour &&
-          data.first->timestamp[i].tm_min == data.second->timestamp[hr_counter].tm_min &&
-          data.first->timestamp[i].tm_sec == data.second->timestamp[hr_counter].tm_sec
-          ) {
-
-        different = false;
-
-      } else if (data.first->timestamp[i].tm_year > data.second->timestamp[hr_counter].tm_year ||
-          data.first->timestamp[i].tm_mon > data.second->timestamp[hr_counter].tm_mon ||
-          data.first->timestamp[i].tm_mday > data.second->timestamp[hr_counter].tm_mday ||
-          data.first->timestamp[i].tm_hour > data.second->timestamp[hr_counter].tm_hour ||
-          data.first->timestamp[i].tm_min > data.second->timestamp[hr_counter].tm_min ||
-          data.first->timestamp[i].tm_sec > data.second->timestamp[hr_counter].tm_sec) {
-        if (!different) hr_counter++;
-        different = true;
-        std::tm max_tm = {};
-        // Set the maximum representable values for some members
-        max_tm.tm_sec = std::numeric_limits<int>::max();
-        max_tm.tm_min = std::numeric_limits<int>::max();
-        max_tm.tm_hour = std::numeric_limits<int>::max();
-        max_tm.tm_mday = std::numeric_limits<int>::max();
-        max_tm.tm_mon = std::numeric_limits<int>::max();
-        max_tm.tm_year = std::numeric_limits<int>::max();
-        data.first->timestamp[i] = max_tm;
-        data.first->x[i] = std::numeric_limits<float>::max();
-        data.first->y[i] = std::numeric_limits<float>::max();
-        data.first->z[i] = std::numeric_limits<float>::max();
-        data.first->microsecond[i] = std::numeric_limits<float>::max();
-      } else if (data.first->timestamp[i].tm_year < data.second->timestamp[hr_counter].tm_year ||
-          data.first->timestamp[i].tm_mon < data.second->timestamp[hr_counter].tm_mon ||
-          data.first->timestamp[i].tm_mday < data.second->timestamp[hr_counter].tm_mday ||
-          data.first->timestamp[i].tm_hour < data.second->timestamp[hr_counter].tm_hour ||
-          data.first->timestamp[i].tm_min < data.second->timestamp[hr_counter].tm_min ||
-          data.first->timestamp[i].tm_sec < data.second->timestamp[hr_counter].tm_sec) {
-        i--;
-        different = true;
-        std::tm max_tm = {};
-        // Set the maximum representable values for some members
-        max_tm.tm_sec = std::numeric_limits<int>::max();
-        max_tm.tm_min = std::numeric_limits<int>::max();
-        max_tm.tm_hour = std::numeric_limits<int>::max();
-        max_tm.tm_mday = std::numeric_limits<int>::max();
-        max_tm.tm_mon = std::numeric_limits<int>::max();
-        max_tm.tm_year = std::numeric_limits<int>::max();
-        data.second->timestamp[i] = max_tm;
-        data.second->x[i] = std::numeric_limits<float>::max();
-        hr_counter++;
-      }
+    if (data.first->timestamp[i].tm_year == data.second->timestamp[hr_counter].tm_year &&
+        data.first->timestamp[i].tm_mon == data.second->timestamp[hr_counter].tm_mon &&
+        data.first->timestamp[i].tm_mday == data.second->timestamp[hr_counter].tm_mday &&
+        data.first->timestamp[i].tm_hour == data.second->timestamp[hr_counter].tm_hour &&
+        data.first->timestamp[i].tm_min == data.second->timestamp[hr_counter].tm_min &&
+        data.first->timestamp[i].tm_sec == data.second->timestamp[hr_counter].tm_sec
+        ) {
+      hr_counter++;
+    } else {
+      std::tm max_tm = {};
+      // Set the maximum representable values for some members
+      max_tm.tm_sec = std::numeric_limits<int>::max();
+      max_tm.tm_min = std::numeric_limits<int>::max();
+      max_tm.tm_hour = std::numeric_limits<int>::max();
+      max_tm.tm_mday = std::numeric_limits<int>::max();
+      max_tm.tm_mon = std::numeric_limits<int>::max();
+      max_tm.tm_year = std::numeric_limits<int>::max();
+      data.first->timestamp[i] = max_tm;
+      data.first->x[i] = std::numeric_limits<float>::max();
+      data.first->y[i] = std::numeric_limits<float>::max();
+      data.first->z[i] = std::numeric_limits<float>::max();
+      data.first->microsecond[i] = std::numeric_limits<float>::max();
     }
+
+  }
 
   std::erase_if(data.first->timestamp, [&](tm value) {
 
@@ -136,19 +109,6 @@ void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Reco
         value.tm_hour == max_tm1.tm_hour &&
         value.tm_min == max_tm1.tm_min &&
         value.tm_sec == max_tm1.tm_sec;
-  });
-
-  std::erase_if(data.second->timestamp, [&](tm value) {
-
-    return value.tm_year == max_tm1.tm_year &&
-        value.tm_mon == max_tm1.tm_mon &&
-        value.tm_mday == max_tm1.tm_mday &&
-        value.tm_hour == max_tm1.tm_hour &&
-        value.tm_min == max_tm1.tm_min &&
-        value.tm_sec == max_tm1.tm_sec;
-  });
-  std::erase_if(data.second->x, [&](float value) {
-    return value == std::numeric_limits<float>::max();
   });
 
   std::erase_if(data.first->x, [&](float value) {
@@ -164,6 +124,121 @@ void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Reco
     return value == std::numeric_limits<float>::max();
   });
 
+}
+
+void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+  if (data.first->timestamp.size() > data.second->timestamp.size()) {
+    remove_redundant_acc(data);
+//    remove_redundant_hr(data);
+  } else {
+    remove_redundant_hr(data);
+//    remove_redundant_acc(data);
+  }
+}
+
+void remove_redundant_hr(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+
+  int acc_counter = 0;
+  bool different = true;
+  std::tm max_tm1 = {};
+  // Set the maximum representable values for some members
+  max_tm1.tm_sec = std::numeric_limits<int>::max();
+  max_tm1.tm_min = std::numeric_limits<int>::max();
+  max_tm1.tm_hour = std::numeric_limits<int>::max();
+  max_tm1.tm_mday = std::numeric_limits<int>::max();
+  max_tm1.tm_mon = std::numeric_limits<int>::max();
+  max_tm1.tm_year = std::numeric_limits<int>::max();
+
+  for (int i = 0; i < data.first->timestamp.size(); ++i) {
+    if (data.second->timestamp[i].tm_year == data.first->timestamp[acc_counter].tm_year &&
+        data.second->timestamp[i].tm_mon == data.first->timestamp[acc_counter].tm_mon &&
+        data.second->timestamp[i].tm_mday == data.first->timestamp[acc_counter].tm_mday &&
+        data.second->timestamp[i].tm_hour == data.first->timestamp[acc_counter].tm_hour &&
+        data.second->timestamp[i].tm_min == data.first->timestamp[acc_counter].tm_min &&
+        data.second->timestamp[i].tm_sec == data.first->timestamp[acc_counter].tm_sec
+        ) {
+      acc_counter++;
+    } else {
+      std::tm max_tm = {};
+      // Set the maximum representable values for some members
+      max_tm.tm_sec = std::numeric_limits<int>::max();
+      max_tm.tm_min = std::numeric_limits<int>::max();
+      max_tm.tm_hour = std::numeric_limits<int>::max();
+      max_tm.tm_mday = std::numeric_limits<int>::max();
+      max_tm.tm_mon = std::numeric_limits<int>::max();
+      max_tm.tm_year = std::numeric_limits<int>::max();
+      data.second->timestamp[i] = max_tm;
+      data.second->x[i] = std::numeric_limits<float>::max();
+    }
+
+    std::erase_if(data.second->timestamp, [&](tm value) {
+
+      return value.tm_year == max_tm1.tm_year &&
+          value.tm_mon == max_tm1.tm_mon &&
+          value.tm_mday == max_tm1.tm_mday &&
+          value.tm_hour == max_tm1.tm_hour &&
+          value.tm_min == max_tm1.tm_min &&
+          value.tm_sec == max_tm1.tm_sec;
+    });
+    std::erase_if(data.second->x, [&](float value) {
+      return value == std::numeric_limits<float>::max();
+    });
+  }
+}
+
+void reduce_to_seconds(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+
+  std::tm max_tm1 = {};
+  // Set the maximum representable values for some members
+  max_tm1.tm_sec = std::numeric_limits<int>::max();
+  max_tm1.tm_min = std::numeric_limits<int>::max();
+  max_tm1.tm_hour = std::numeric_limits<int>::max();
+  max_tm1.tm_mday = std::numeric_limits<int>::max();
+  max_tm1.tm_mon = std::numeric_limits<int>::max();
+  max_tm1.tm_year = std::numeric_limits<int>::max();
+
+  for (int i = 0; i < data.first->timestamp.size(); ++i) {
+    if (data.first->microsecond[i] == 0.0
+        ) {
+      continue;
+    } else {
+      std::tm max_tm = {};
+      // Set the maximum representable values for some members
+      max_tm.tm_sec = std::numeric_limits<int>::max();
+      max_tm.tm_min = std::numeric_limits<int>::max();
+      max_tm.tm_hour = std::numeric_limits<int>::max();
+      max_tm.tm_mday = std::numeric_limits<int>::max();
+      max_tm.tm_mon = std::numeric_limits<int>::max();
+      max_tm.tm_year = std::numeric_limits<int>::max();
+      data.first->timestamp[i] = max_tm;
+      data.first->x[i] = std::numeric_limits<float>::max();
+      data.first->y[i] = std::numeric_limits<float>::max();
+      data.first->z[i] = std::numeric_limits<float>::max();
+      data.first->microsecond[i] = std::numeric_limits<float>::max();
+    }
+  }
+  std::erase_if(data.first->timestamp, [&](tm value) {
+
+    return value.tm_year == max_tm1.tm_year &&
+        value.tm_mon == max_tm1.tm_mon &&
+        value.tm_mday == max_tm1.tm_mday &&
+        value.tm_hour == max_tm1.tm_hour &&
+        value.tm_min == max_tm1.tm_min &&
+        value.tm_sec == max_tm1.tm_sec;
+  });
+
+  std::erase_if(data.first->x, [&](float value) {
+    return value == std::numeric_limits<float>::max();
+  });
+  std::erase_if(data.first->y, [&](float value) {
+    return value == std::numeric_limits<float>::max();
+  });
+  std::erase_if(data.first->z, [&](float value) {
+    return value == std::numeric_limits<float>::max();
+  });
+  std::erase_if(data.first->microsecond, [&](float value) {
+    return value == std::numeric_limits<float>::max();
+  });
 }
 
 

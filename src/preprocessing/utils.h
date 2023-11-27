@@ -10,6 +10,8 @@
 #include <vector>
 #include <chrono>
 
+void reduce_to_seconds(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
+
 /**
  * The preprocess function normalizes and processes accelerometer and heart rate data, removes redundant data, and saves
  * the cleared accelerometer data.
@@ -30,9 +32,13 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 
 /**
- * The function `remove_redundant` removes redundant data
+ * The function `remove_redundant_acc` removes redundant data
  * object.
  */
+void remove_redundant_acc(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
+
+void remove_redundant_hr(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
+
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 
 /**

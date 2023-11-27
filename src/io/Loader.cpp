@@ -17,8 +17,8 @@ std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
   std::shared_ptr<RecordACC> data_acc;
   std::shared_ptr<RecordHR> data_hr;
   if (load_sequential) {
-    data_acc = loader_acc->load_ACC_data(acc_filename);
     data_hr = loader_hr->load_HR_data(hr_filename);
+    data_acc = loader_acc->load_ACC_data(acc_filename);
   } else {
     // `hr_thread_loader` and `acc_thread_loader`, load data from two different files concurrently.
     auto hr_thread_loader = std::thread([&hr_filename, &data_hr, &loader_hr]() {
@@ -59,6 +59,9 @@ std::shared_ptr<RecordHR> DataGodLoader::load_HR_data(const std::string &input_p
     ss.str(line);
     // Parse the input string
     ss >> std::get_time(&timeinfo, "%Y-%m-%d %H:%M:%S");
+    if (ss.fail()) {
+      throw std::invalid_argument("malformed HR_data...");
+    }
     ss.ignore(); // Ignore the comma (,)
     ss >> x;
     timeinfo.tm_year += 1900;
@@ -81,6 +84,9 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
     ss.str(line);
     // Parse the input string
     ss >> std::get_time(&timeinfo, "%Y-%m-%d %H:%M:%S");
+    if (ss.fail()) {
+      throw std::invalid_argument("malformed ACC_data...");
+    }
     ss.ignore(); // Ignore the dot (.)
     ss >> microsecond;
     ss.ignore(); // Ignore the comma (,)
