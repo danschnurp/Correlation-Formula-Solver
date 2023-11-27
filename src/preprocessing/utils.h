@@ -30,7 +30,7 @@ void preprocess(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>>
 void interpolate(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
 
 /**
- * The function `remove_redundant` removes redundant data from `RecordACC`
+ * The function `remove_redundant` removes redundant data
  * object.
  */
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);

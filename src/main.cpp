@@ -158,6 +158,9 @@ int main(int argc, char **argv) {
       population->create_one_generation(epoch % 20);
       std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
     }
+
+    // todo svg results
+
   }
         catch (std::exception & err)
         {
