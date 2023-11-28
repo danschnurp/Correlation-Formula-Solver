@@ -187,6 +187,7 @@ void remove_redundant_hr(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<R
 }
 
 void reduce_to_seconds(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+//  todo ACC data are in angles maybe ... not in  m/s^2 the possible correlation can be shifted ... 🤔
 
   std::tm max_tm1 = {};
   // Set the maximum representable values for some members
