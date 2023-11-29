@@ -201,7 +201,8 @@ void reduce_to_seconds(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<Rec
   for (int i = 0; i < data.first->timestamp.size(); ++i) {
     if (data.first->microsecond[i] == 0.0
         ) {
-      continue;
+      data.first->timestamp[i].tm_year += 1900;
+      data.first->timestamp[i].tm_mon += 1;
     } else {
       std::tm max_tm = {};
       // Set the maximum representable values for some members

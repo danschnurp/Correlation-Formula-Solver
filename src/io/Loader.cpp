@@ -5,7 +5,14 @@
 #include "Loader.h"
 #include <thread>
 
-
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <charconv>
+#include <iomanip>
+#include <algorithm>
+#include <iterator>
 
 std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
     std::string &hr_filename, std::string &acc_filename, bool load_sequential) {
@@ -45,6 +52,10 @@ std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
       acc_thread_loader.join();
     }
   }
+
+  if (data_acc->x.empty()) throw std::invalid_argument("malformed ACC_data...");
+  if (data_hr->x.empty()) throw std::invalid_argument("malformed HR_data...");
+
   return std::make_pair(data_acc, data_hr);
 }
 
@@ -78,8 +89,34 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
   file.open(input_path, std::ios::binary);
   if (!file.is_open()) throw std::runtime_error{"ACC_xxx.csv not found..."};
   auto data = std::make_shared<RecordACC>();
-  std::getline(file, line);
-  while (std::getline(file, line)) {
+
+  // Get the file size
+  std::size_t size = std::filesystem::file_size(input_path);
+  // Map the file to memory
+  std::vector<char> raw_data(size);
+  file.read(raw_data.data(), size);
+
+  // Tokenize lines and parse data
+  std::string_view dataView(raw_data.data(), size);
+  std::size_t pos = 0;
+
+  // Skip the header
+  std::size_t headerEnd = dataView.find("\r\n");
+  if (headerEnd != std::string::npos) {
+    pos = headerEnd + 2;
+  }
+
+  while (pos != std::string::npos) {
+    // Find the end of the line
+    std::size_t end = dataView.find("\r\n", pos);
+    if (end == std::string::npos) {
+      end = size;
+    }
+    if (end == size) break;
+
+    // Extract the line
+    std::string line(dataView.substr(pos, end - pos));
+
     ss.clear();
     ss.str(line);
     // Parse the input string
@@ -95,13 +132,13 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
     ss >> y;
     ss.ignore(); // Ignore the comma (,)
     ss >> z;
-    timeinfo.tm_year += 1900;
-    timeinfo.tm_mon += 1;
     data->timestamp.emplace_back(timeinfo);
     data->microsecond.emplace_back(microsecond);
     data->x.emplace_back(x);
     data->y.emplace_back(y);
     data->z.emplace_back(z);
+    // Move to the next line
+    pos = (end == size) ? std::string::npos : end + 1;
   }
   file.close();
   return data;
