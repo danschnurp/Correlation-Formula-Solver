@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <iterator>
+#include <filesystem>
 
 std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> load_data(
     std::string &hr_filename, std::string &acc_filename, bool load_sequential) {
@@ -85,6 +86,7 @@ std::shared_ptr<RecordHR> DataGodLoader::load_HR_data(const std::string &input_p
 }
 
 std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input_path) {
+  std::ios::sync_with_stdio(false);
   std::ifstream file;
   file.open(input_path, std::ios::binary);
   if (!file.is_open()) throw std::runtime_error{"ACC_xxx.csv not found..."};
@@ -103,19 +105,19 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
   // Skip the header
   std::size_t headerEnd = dataView.find('\n');
   if (headerEnd != std::string::npos) {
-    pos = headerEnd + 2;
+    pos = headerEnd;
   }
 
   while (pos != std::string::npos) {
     // Find the end of the line
-    std::size_t end = dataView.find('\n', pos);
+    std::size_t end = dataView.find("\r\n", pos);
     if (end == std::string::npos) {
       end = size;
     }
     if (end == size) break;
 
     // Extract the line
-    std::string line(dataView.substr(pos, end - pos));
+    std::string line(dataView.substr(pos + 1, end - pos - 1));
 
     ss.clear();
     ss.str(line);
@@ -126,17 +128,19 @@ std::shared_ptr<RecordACC> DataGodLoader::load_ACC_data(const std::string &input
     }
     ss.ignore(); // Ignore the dot (.)
     ss >> microsecond;
-    ss.ignore(); // Ignore the comma (,)
-    ss >> x;
-    ss.ignore(); // Ignore the comma (,)
-    ss >> y;
-    ss.ignore(); // Ignore the comma (,)
-    ss >> z;
-    data->timestamp.emplace_back(timeinfo);
-    data->microsecond.emplace_back(microsecond);
-    data->x.emplace_back(x);
-    data->y.emplace_back(y);
-    data->z.emplace_back(z);
+    if (microsecond == 0.0) {
+      ss.ignore(); // Ignore the comma (,)
+      ss >> x;
+      ss.ignore(); // Ignore the comma (,)
+      ss >> y;
+      ss.ignore(); // Ignore the comma (,)
+      ss >> z;
+      data->timestamp.emplace_back(timeinfo);
+      data->microsecond.emplace_back(microsecond);
+      data->x.emplace_back(x);
+      data->y.emplace_back(y);
+      data->z.emplace_back(z);
+    }
     // Move to the next line
     pos = (end == size) ? std::string::npos : end + 1;
   }
