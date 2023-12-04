@@ -50,11 +50,13 @@ public:
    * @return A shared pointer to an object of type `RecordHR` is being returned.
    */
   std::shared_ptr<RecordHR> load_HR_data(const std::string &input_path);
+
   /**
-   * The function `load_ACC_data` reads data from a binary file and parses it into a shared pointer to a `RecordACC` object.
+   * The function `load_ACC_data` reads data from a binary file, tokenizes the lines, and parses the data into a shared
+   * pointer to a `RecordACC` object.
    *
-   * @param input_path The input_path parameter is a string that represents the file path of the ACC_xxx.csv file that needs
-   * to be loaded.
+   * @param input_path The `input_path` parameter is a `std::string` that represents the path to the input file containing
+   * the ACC data.
    *
    * @return The function `load_ACC_data` returns a `std::shared_ptr` to an object of type `RecordACC`.
    */

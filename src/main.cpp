@@ -8,7 +8,6 @@
 #include <memory>
 #include <filesystem>
 #include "genetic_alg/Node.h"
-#include "genetic_alg/Equation.h"
 
 struct Options {
   std::string dataPathHR;
@@ -25,15 +24,26 @@ struct Options {
 };
 
 void printHelp() {
-  std::cout << "Usage: ppr(.exe) --data_path_hr <path_HR> --data_path_acc <path_ACC> [--not_use_gpu]\n";
+  std::cout << "Usage: ppr(.exe) --data_path_hr <path_HR> --data_path_acc <path_ACC> [--not_use_gpu "
+               "--load_data_sequentially --gpu_workgroup_size <INTEGER>\n"
+               " --minimum_equation_coefficients <(MINUS)INTEGER> \n"
+               "--maximum_equation_coefficient <INTEGER> \n"
+               "--maximum_equation_init_length ]\n";
 }
 
+/**
+ * The function `parseArgs` parses command line arguments and returns an `Options` object.
+ *
+ * @param argc The `argc` parameter is an integer that represents the number of command-line arguments passed to the
+ * program. It includes the name of the program itself as the first argument.
+ * @param argv An array of C-style strings (char*) representing the command-line arguments passed to the program.
+ *
+ * @return an object of type `Options`.
+ */
 Options parseArgs(int argc, char *argv[]) {
   Options options;
-
   for (int i = 1; i < argc; ++i) {
     std::string arg = argv[i];
-
     if (arg == "--data_path_hr" && i + 1 < argc) {
       options.dataPathHR = argv[++i];
     } else if (arg == "--data_path_acc" && i + 1 < argc) {
@@ -58,18 +68,25 @@ Options parseArgs(int argc, char *argv[]) {
       std::exit(EXIT_FAILURE);
     }
   }
-
   // Validate if required arguments are provided
   if (options.dataPathHR.empty() || options.dataPathACC.empty()
       || !std::filesystem::exists(options.dataPathHR) || !std::filesystem::exists(options.dataPathACC)) {
     printHelp();
     std::exit(EXIT_FAILURE);
   }
-
   return options;
 }
 
-void vulkan_corectness_test(std::string &shader_dir, int WORKGROUP_SIZE) {
+/**
+ * The function performs a Vulkan correctness test by computing a saxpy operation on two vectors using a specified shader.
+ *
+ * @param shader_dir The `shader_dir` parameter is a string that represents the directory where the shader file is located.
+ * It is used to construct the full path to the shader file by appending the shader filename to the `shader_dir` string.
+ * @param WORKGROUP_SIZE The `WORKGROUP_SIZE` parameter is an integer that determines the number of workgroups in each
+ * dimension of the compute shader. It specifies the number of shader invocations that will be executed concurrently. The
+ * value of `WORKGROUP_SIZE` will depend on the specific requirements of your application and the capabilities of
+ */
+void vulkan_correctness_test(std::string &shader_dir, int WORKGROUP_SIZE) {
   const auto width = 90;
   const auto height = 60;
   const auto a = 2.0f; // saxpy scaling factor
@@ -83,7 +100,7 @@ void vulkan_corectness_test(std::string &shader_dir, int WORKGROUP_SIZE) {
   auto d_x = vuh::Array<float>::fromHost(x, f.device, f.physDevice);
   f.compute(d_y, d_x, {width, height, a});
   auto out_tst = std::vector<float>{};
-  d_y.to_host(out_tst); // and now out_tst should contain the result of saxpy (y = y + ax)
+  d_y.to_host(out_tst);
   if (std::abs(out_tst[0] - 2.01) < 0.00001)
     std::cout << "result OK" << std::endl;
 }
@@ -113,12 +130,7 @@ int main(int argc, char **argv) {
   std::cout << "maximum_equation_coefficients: " << options.maximumEquationCoefficients << std::endl;
   std::cout << "maximum_equation_init_length: " << options.maximumEquationInitLength << std::endl << std::endl;
 
-
-  // todo refactor gpu computation unit
-
-
-
-  if (options.useGPU) vulkan_corectness_test(options.shadersDir, WORKGROUP_SIZE);
+  if (options.useGPU) vulkan_correctness_test(options.shadersDir, WORKGROUP_SIZE);
 
   try {
     std::cout << std::endl << "starting... " << std::endl;

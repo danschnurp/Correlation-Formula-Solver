@@ -36,6 +36,15 @@ class Population {
   // determining x / y / Z
   std::vector<std::vector<float>> xyzVector;
 
+  /**
+   * The function selects equations from a population based on their fitness being below or equal to a given mean result.
+   *
+   * @param mean_result The parameter `mean_result` represents the mean value used for selection in the population. It is
+   * used to compare the fitness values of equations in the population. If the fitness value of an equation is less than or
+   * equal to `mean_result`, the equation is considered for removal from the population.
+   *
+   * @return The function does not have a return type, so it does not return anything.
+   */
   void selectMean(float mean_result);
 
   /**
@@ -57,7 +66,15 @@ class Population {
    */
   std::vector<Equation> crossbreed();
 
+  /**
+   * The function evaluates an equation using different operations and returns the result.
+   *
+   * @param equation The `equation` parameter is of type `Equation`
+   *
+   * @return The function `evaluate` returns a `std::vector<float>` containing the evaluated values of the equation.
+   */
   std::vector<float> evaluate(const Equation &equation);
+
   /**
    * The function evaluates a set of equations using given input vectors and returns the results.
    *
@@ -72,6 +89,10 @@ class Population {
   std::vector<float> evaluateCPU(const std::vector<float> &x, const std::vector<float> &y,
                                  const std::vector<float> &z, Equation &equation);
 
+  /**
+   * The function computes the fitness of each equation in the population by evaluating it either on the GPU or CPU and
+   * stores the fitness values in a vector.
+   */
   void compute_fitness();
 
  public:
@@ -81,10 +102,27 @@ class Population {
   std::vector<float> fitness_children;
   std::vector<Equation> equations_children;
 
+  /**
+   * The function initializes a population of equations using given data and parameters, and optionally sets up GPU
+   * computation units.
+   *
+   * @param data
+   * @param useGPU A boolean value indicating whether to use GPU for computation or not.
+   * @param WORKGROUP_SIZE WORKGROUP_SIZE is the number of work-items in a work-group. It determines the number of parallel
+   * computations that can be performed simultaneously on a GPU.
+   * @param minimumEquationCoefficientsp The parameter "minimumEquationCoefficientsp" represents the minimum value for the
+   * coefficients of the equations in the population.
+   * @param maximumEquationCoefficientsp The parameter "maximumEquationCoefficientsp" represents the maximum value that can
+   * be assigned to the coefficients of the equations in the population.
+   * @param maximumEquationInitLengthp The parameter "maximumEquationInitLengthp" represents the maximum initial length of an
+   * equation in the population. It is used to determine the maximum number of coefficients that can be randomly generated
+   * for each equation during initialization.
+   */
   Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGpu, int WORKGROUP_SIZE,
              float minimumEquationCoefficients, float maximumEquationCoefficients,
              float maximumEquationInitLength);
 
+    // todo
   void create_one_generation(int wave);
 
   friend std::ostream &operator<<(std::ostream &os, const Population &population);

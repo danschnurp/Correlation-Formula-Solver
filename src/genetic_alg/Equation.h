@@ -31,17 +31,16 @@ public:
     bool operator==(const Equation &rhs) const;
 
     bool operator!=(const Equation &rhs) const;
-
-    /**
-     * The function evaluates an equation using the given values of x, y, and z.
-     *
-     * @param x The parameter `x` represents the value of the variable `x` in the equation.
-     * @param y The parameter `y` represents the value of the variable `y` in the equation.
-     * @param z The parameter `z` represents the value of the variable `z` in the equation. It is used in the `evaluate`
-     * function to calculate the result of the equation.
-     *
-     * @return the result of evaluating the equation using the given values of x, y, and z.
-     */
+  /**
+    * The function evaluates an equation using the given values of x, y, and z.
+    *
+    * @param x The parameter "x" represents the value of the variable "x" in the equation.
+    * @param y The parameter "y" in the given code represents the value of the variable "y" in the equation being evaluated.
+    * @param z The parameter "z" in the given code represents a variable that can be used in the equation evaluation. It is a
+    * float_t type variable, which means it can hold decimal values.
+    *
+    * @return the result of evaluating the equation using the given values of x, y, and z.
+    */
     float_t  evaluate(float_t x, float_t y, float_t z);
 
 };
