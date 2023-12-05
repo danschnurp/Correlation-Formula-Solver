@@ -128,10 +128,10 @@ void remove_redundant_acc(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
   if (data.first->timestamp.size() > data.second->timestamp.size()) {
     remove_redundant_acc(data);
-//    remove_redundant_hr(data);
+    remove_redundant_hr(data);
   } else {
     remove_redundant_hr(data);
-//    remove_redundant_acc(data);
+    remove_redundant_acc(data);
   }
 }
 
@@ -148,7 +148,7 @@ void remove_redundant_hr(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<R
   max_tm1.tm_mon = std::numeric_limits<int>::max();
   max_tm1.tm_year = std::numeric_limits<int>::max();
 
-  for (int i = 0; i < data.first->timestamp.size(); ++i) {
+  for (int i = 0; i < data.second->timestamp.size(); ++i) {
     if (data.second->timestamp[i].tm_year == data.first->timestamp[acc_counter].tm_year &&
         data.second->timestamp[i].tm_mon == data.first->timestamp[acc_counter].tm_mon &&
         data.second->timestamp[i].tm_mday == data.first->timestamp[acc_counter].tm_mday &&
@@ -169,7 +169,7 @@ void remove_redundant_hr(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<R
       data.second->timestamp[i] = max_tm;
       data.second->x[i] = std::numeric_limits<float>::max();
     }
-
+  }
     std::erase_if(data.second->timestamp, [&](tm value) {
 
       return value.tm_year == max_tm1.tm_year &&
@@ -182,7 +182,7 @@ void remove_redundant_hr(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<R
     std::erase_if(data.second->x, [&](float value) {
       return value == std::numeric_limits<float>::max();
     });
-  }
+
 }
 
 void reduce_to_seconds(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {

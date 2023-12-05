@@ -5,7 +5,6 @@
 
 #include "Population.h"
 #include <iostream>
-#include "../gpu/demo/vulkan_helpers.hpp"
 
 void print_time(auto start_time) {
   auto end_time = std::chrono::high_resolution_clock::now();
@@ -60,7 +59,16 @@ void Population::compute_fitness() {
   print_time(start_time);
 }
 
-void Population::selectMean(float mean_result) {
+void Population::selectMean(float mean_result, float difficulty) {
+  // ensuring the population doesn't extinct
+  int survivors = 0;
+  for (int j = 0; j < equations.size(); ++j) {
+    if (fitness[j] > (mean_result * difficulty)) {
+      survivors++;
+    }
+  }
+  if (survivors > 0) mean_result *= difficulty;
+
   // selection based on mean like result
   for (int j = 0; j < equations.size(); ++j) {
     if (fitness[j] <= (mean_result)) {
@@ -72,7 +80,7 @@ void Population::selectMean(float mean_result) {
   std::erase_if(fitness, [](float &value) { return value == std::numeric_limits<float>::max(); });
 }
 
-void Population::create_one_generation(int wave) {
+void Population::create_one_generation(float wave) {
   compute_fitness();
   std::copy(fitness_children.begin(), fitness_children.end(), std::back_inserter(fitness));
   std::copy(equations_children.begin(), equations_children.end(), std::back_inserter(equations));
@@ -80,7 +88,8 @@ void Population::create_one_generation(int wave) {
   equations_children.clear();
 
   float mean_result = mean(fitness);
-  selectMean(mean_result * 1.25);
+  std::cout << "average population fitness before selection: " << mean_result << std::endl;
+  selectMean(mean_result, wave);
 
   // print stats
   auto index_max = std::max_element(fitness.begin(), fitness.end());

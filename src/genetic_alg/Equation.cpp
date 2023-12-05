@@ -16,7 +16,7 @@ Equation::Equation(float minimumEquationCoefficients,
   auto result = compute_mean_std(minimumEquationCoefficients, maximumEquationCoefficients);
   std::normal_distribution<float> normal_dist_values(result.first, result.second);
   root = normal_dist_values(e2);
-
+  if (maximumEquationInitLength < 3) maximumEquationInitLength = 3;
   // initial length of equation is 3 - 7
   result = compute_mean_std(3.0, maximumEquationInitLength);
     std::normal_distribution<float> normal_dist_len(result.first, result.second);
@@ -62,7 +62,9 @@ float_t Equation::evaluate(float_t x, float_t y, float_t z) {
 
 std::ostream &operator<<(std::ostream &os, const Equation &equation) {
     os << "equation: " << equation.root;
+  int counter = 0;
     for (const auto &i: equation.nodes) {
+      counter++;
         switch (i.operand) {
             case plus:
                 os << " " << "+";break;
@@ -84,6 +86,7 @@ std::ostream &operator<<(std::ostream &os, const Equation &equation) {
             default:
                 os << " " << "None";break;
         }
+      if (counter % 10 == 0) os << std::endl;
     }
     os << std::endl;
     return os;

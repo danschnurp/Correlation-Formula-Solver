@@ -45,7 +45,7 @@ class Population {
    *
    * @return The function does not have a return type, so it does not return anything.
    */
-  void selectMean(float mean_result);
+  void selectMean(float mean_result, float difficulty);
 
   /**
  * The function calculates the Pearson correlation coefficient between the input vector and precomputed labels.
@@ -123,8 +123,8 @@ class Population {
              float minimumEquationCoefficients, float maximumEquationCoefficients,
              float maximumEquationInitLength);
 
-    // todo
-  void create_one_generation(int wave);
+  // todo
+  void create_one_generation(float wave);
 
   friend std::ostream &operator<<(std::ostream &os, const Population &population);
 

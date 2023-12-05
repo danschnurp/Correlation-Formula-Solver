@@ -7,8 +7,6 @@
 #include "genetic_alg/Population.h"
 #include <memory>
 #include <filesystem>
-#include "genetic_alg/Node.h"
-#include "genetic_alg/Equation.h"
 #include "io/svg_gen.h"
 
 struct Options {
@@ -16,9 +14,11 @@ struct Options {
   std::string dataPathACC;
   bool loadSequentially = false;
 
-  float minimumEquationCoefficients = -5.0;
-  float maximumEquationCoefficients = 5.0;
-  float maximumEquationInitLength = 10;
+  float minimumEquationCoefficients = 0.999;
+  float maximumEquationCoefficients = 1.001;
+  float maximumEquationInitLength = 4;
+
+  int epochs = 10;
 
   bool useGPU = true;
   int workgroupSize = 16;
@@ -28,8 +28,9 @@ struct Options {
 void printHelp() {
   std::cout << "Usage: ppr(.exe) --data_path_hr <path_HR> --data_path_acc <path_ACC> [--not_use_gpu "
                "--load_data_sequentially --gpu_workgroup_size <INTEGER>\n"
-               " --minimum_equation_coefficients <(MINUS)INTEGER> \n"
+               " --minimum_equation_coefficients <INTEGER> \n"
                "--maximum_equation_coefficient <INTEGER> \n"
+               "--epochs <INTEGER> \n"
                "--maximum_equation_init_length ]\n";
 }
 
@@ -58,6 +59,8 @@ Options parseArgs(int argc, char *argv[]) {
       options.loadSequentially = true;
     } else if (arg == "--gpu_workgroup_size" && i + 1 < argc) {
       options.workgroupSize = std::stoi(argv[++i]);
+    } else if (arg == "--epochs" && i + 1 < argc) {
+      options.epochs = std::stoi(argv[++i]);
     } else if (arg == "--minimum_equation_coefficients" && i + 1 < argc) {
       options.minimumEquationCoefficients = std::stof(argv[++i]);
     } else if (arg == "--maximum_equation_coefficients" && i + 1 < argc) {
@@ -166,8 +169,8 @@ int main(int argc, char **argv) {
 
     population->prepareForFitFunction(data.second->x, WORKGROUP_SIZE);
 
-    for (int epoch = 0; epoch < 10; ++epoch) {
-      population->create_one_generation(epoch % 20);
+    for (int epoch = 0; epoch < options.epochs; ++epoch) {
+      population->create_one_generation(1.25 + 0.1 * (epoch % 20));
       std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
     }
 
