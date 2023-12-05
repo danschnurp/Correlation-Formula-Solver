@@ -102,6 +102,7 @@ class Population {
   std::vector<float> fitness_children;
   std::vector<Equation> equations_children;
   std::shared_ptr<Equation> bestOne;
+  float bestCorr = 0;
 
   /**
    * The function initializes a population of equations using given data and parameters, and optionally sets up GPU

@@ -100,6 +100,7 @@ void Population::create_one_generation(float wave) {
   std::cout << "average population fitness after selection: " << mean(fitness) << std::endl;
 
   bestOne = std::make_shared<Equation>(equations[index_m]);
+  bestCorr = fitness[index_m];
 
   // crossbreeding
   auto start_time = std::chrono::high_resolution_clock::now();

@@ -2,7 +2,7 @@
 #include <fstream>
 #include "svg_gen.h"
 
-void make_svg(std::shared_ptr<Equation> &best_one,
+void make_svg(std::shared_ptr<Equation> &best_one, float corr,
               std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, std::string name) {
   // Create an output file stream
   std::ofstream svgFile("correlation_plot_" + name + ".svg");
@@ -63,6 +63,9 @@ void make_svg(std::shared_ptr<Equation> &best_one,
                          )" << "</text>" << std::endl;
   svgFile << R"(  <text x="450" y="50" class="speed-description" font-size="11" fill="gray" text-anchor="middle">)"
           << *best_one << "</text>" << std::endl;
+  svgFile
+      << R"(  <text x="450" y="65" class="speed-description" font-size="11" fill="gray" text-anchor="middle"> correlation: )"
+      << corr << "</text>" << std::endl;
 
   // X-axis captions
   for (int i = 0; i < 14; i++) {
