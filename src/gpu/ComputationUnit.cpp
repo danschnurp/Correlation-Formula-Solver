@@ -22,7 +22,7 @@ constexpr bool enableValidation = false;
 } // namespace
 
 
-/// Constructor
+
 ComputationUnit::ComputationUnit(const std::string &shaderPath, bool printDeviceInfo, int WORKGROUP_SIZE_param) {
   auto appInfo = vk::ApplicationInfo("PPR Compute app",
                                      0,
@@ -118,7 +118,6 @@ ComputationUnit::~ComputationUnit() noexcept {
     instance.destroy();
 }
 
-///
 auto ComputationUnit::compute(vk::Buffer &out, const vk::Buffer &in, const ComputationUnit::PushParams &p
 ) -> void {
 
@@ -139,7 +138,7 @@ auto ComputationUnit::compute(vk::Buffer &out, const vk::Buffer &in, const Compu
     device.updateDescriptorSets(writeDsSets, {});
     cmdBuffer = createCommandBuffer(device, cmdPool, pipe, pipeLayout, dscSet, p);
 
-    assert(cmdBuffer != vk::CommandBuffer{}); // TODO: this should be a check for a valid command buffer
+    assert(cmdBuffer != vk::CommandBuffer{});
     auto submitInfo = vk::SubmitInfo(0, nullptr, nullptr, 1, &cmdBuffer); // submit a single command buffer
 
     // submit the command buffer to the queue and set up a fence.
@@ -168,13 +167,12 @@ auto ComputationUnit::createCommandBuffer(const vk::Device &device,
                                                 const vk::PipelineLayout &pipeLayout,
                                                 const vk::DescriptorSet &dscSet,
                                                 const ComputationUnit::PushParams &p
-) -> vk::CommandBuffer {
+) const -> vk::CommandBuffer {
     // allocate a command buffer from the command pool.
     auto commandBufferAI = vk::CommandBufferAllocateInfo(cmdPool, vk::CommandBufferLevel::ePrimary, 1);
     auto commandBuffer = device.allocateCommandBuffers(commandBufferAI)[0];
 
     // Start recording commands into the newly allocated command buffer.
-//	auto beginInfo = vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit); // buffer is only submitted and used once
     auto beginInfo = vk::CommandBufferBeginInfo();
     commandBuffer.begin(beginInfo);
 

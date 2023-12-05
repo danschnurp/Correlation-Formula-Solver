@@ -123,7 +123,6 @@ void remove_redundant_acc(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<
   std::erase_if(data.first->microsecond, [&](float value) {
     return value == std::numeric_limits<float>::max();
   });
-
 }
 
 void remove_redundant(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {

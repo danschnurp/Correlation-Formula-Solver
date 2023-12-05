@@ -10,19 +10,6 @@ using std::end;
 
 namespace vuh {
 
-VKAPI_ATTR VkBool32 VKAPI_CALL debugReporter(
-    VkDebugReportFlagsEXT,
-    VkDebugReportObjectTypeEXT,
-    uint64_t,
-    size_t,
-    int32_t,
-    const char *pLayerPrefix,
-    const char *pMessage,
-    void *                      /*pUserData*/
-) {
-  std::cerr << "[WARNING]: Vulkan says: " << pLayerPrefix << ": " << pMessage << "\n";
-  return VK_FALSE;
-}
 
 /// Read binary shader file into array of uint32_t. little endian assumed.
 /// Padded by 0s to a boundary of 4.
@@ -43,36 +30,6 @@ auto loadShader(const vk::Device &device, const char *filename, vk::ShaderModule
   auto code = readShaderSrc(filename);
   auto shaderCI = vk::ShaderModuleCreateInfo(flags, code.size(), reinterpret_cast<uint32_t *>(code.data()));
   return device.createShaderModule(shaderCI);
-}
-
-/// filter list of desired extensions to include only those supported by current Vulkan instance
-auto enabledExtensions(const std::vector<const char *> &extensions) -> std::vector<const char *> {
-  auto ret = std::vector<const char *>{};
-  auto instanceExtensions = vk::enumerateInstanceExtensionProperties();
-  for (auto e : extensions) {
-    auto it = std::find_if(ALL(instanceExtensions), [=](auto &p) { return strcmp(p.extensionName, e); });
-    if (it != end(instanceExtensions)) {
-      ret.push_back(e);
-    } else {
-      std::cerr << "[WARNING]: extension " << e << " is not found" "\n";
-    }
-  }
-  return ret;
-}
-
-/// filter list of desired extensions to include only those supported by current Vulkan instance
-auto enabledLayers(const std::vector<const char *> &layers) -> std::vector<const char *> {
-  auto ret = std::vector<const char *>{};
-  auto instanceLayers = vk::enumerateInstanceLayerProperties();
-  for (auto l : layers) {
-    auto it = std::find_if(ALL(instanceLayers), [=](auto &p) { return strcmp(p.layerName, l); });
-    if (it != end(instanceLayers)) {
-      ret.push_back(l);
-    } else {
-      std::cerr << "[WARNING] layer " << l << " is not found" "\n";
-    }
-  }
-  return ret;
 }
 
 /// create logical device to interact with the physical one
