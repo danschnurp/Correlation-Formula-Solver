@@ -1,17 +1,19 @@
 #include <iostream>
 #include <fstream>
+#include "svg_gen.h"
 
-int main() {
-    // Create an output file stream
-    std::ofstream svgFile("plot.svg");
+void make_svg(std::shared_ptr<Equation> &best_one,
+              std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+  // Create an output file stream
+  std::ofstream svgFile("plot.svg");
 
-    // Check if the file opened successfully
-    if (!svgFile.is_open()) {
-        std::cerr << "Error: Unable to open the SVG file." << std::endl;
-        return 1;
-    }
+  // Check if the file opened successfully
+  if (!svgFile.is_open()) {
+    std::cerr << "Error: Unable to open the SVG file." << std::endl;
+    return;
+  }
 
-    // Define the width and height of the SVG canvas
+  // Define the width and height of the SVG canvas
     int width = 450;
     int height = 300;
 
@@ -64,6 +66,4 @@ int main() {
     svgFile.close();
 
     std::cout << "SVG plot with white background and black lines created successfully in 'plot.svg'." << std::endl;
-
-    return 0;
 }

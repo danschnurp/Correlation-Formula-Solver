@@ -23,7 +23,8 @@ set(target_sources
         genetic_alg/Population.cpp genetic_alg/Population.h
         gpu/ComputationUnit.cpp gpu/ComputationUnit.h
         gpu/demo/vulkan_helpers.cpp
-        gpu/demo/vulkan_helpers.hpp)
+        gpu/demo/vulkan_helpers.hpp
+        io/svg_gen.cpp io/svg_gen.h)
 
 list(TRANSFORM target_sources PREPEND "src/")
 

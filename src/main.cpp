@@ -9,6 +9,7 @@
 #include <filesystem>
 #include "genetic_alg/Node.h"
 #include "genetic_alg/Equation.h"
+#include "io/svg_gen.h"
 
 struct Options {
   std::string dataPathHR;
@@ -97,8 +98,6 @@ int main(int argc, char **argv) {
   std::cout << "Use GPU: " << std::boolalpha << options.useGPU << std::endl;
   if (options.useGPU) {
     std::cout << "Workgroup Size: " << options.workgroupSize << std::endl;
-    std::cout << "shader " << options.shadersDir + "saxpy.spv" << " exists: "
-              << std::filesystem::exists(options.shadersDir + "saxpy.spv") << std::endl;
     std::cout << "shader " << options.shadersDir + "plus.spv" << " exists: "
               << std::filesystem::exists(options.shadersDir + "plus.spv") << std::endl;
     std::cout << "shader " << options.shadersDir + "minus.spv" << " exists: "
@@ -154,12 +153,12 @@ int main(int argc, char **argv) {
 
     population->prepareForFitFunction(data.second->x, WORKGROUP_SIZE);
 
-    for (int epoch = 0; epoch < 1000; ++epoch) {
+    for (int epoch = 0; epoch < 10; ++epoch) {
       population->create_one_generation(epoch % 20);
       std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
     }
 
-    // todo svg results
+    make_svg(population->bestOne, data);
 
   }
         catch (std::exception & err)

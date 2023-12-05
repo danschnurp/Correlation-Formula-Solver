@@ -80,6 +80,7 @@ class Population {
   std::vector<Equation> equations;
   std::vector<float> fitness_children;
   std::vector<Equation> equations_children;
+  std::shared_ptr<Equation> bestOne;
 
   Population(std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, bool useGpu, int WORKGROUP_SIZE,
              float minimumEquationCoefficients, float maximumEquationCoefficients,

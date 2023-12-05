@@ -55,8 +55,7 @@ void Population::compute_fitness() {
     }
   }
   catch (...) {
-    std::cout << "..." << std::endl;
-    throw std::runtime_error("...");
+    throw std::runtime_error("error while computing fitness...");
   }
   print_time(start_time);
 }
@@ -91,6 +90,8 @@ void Population::create_one_generation(int wave) {
   std::cout << "parents population size: " << equations.size() << std::endl;
   std::cout << "average population fitness after selection: " << mean(fitness) << std::endl;
 
+  bestOne = std::make_shared<Equation>(equations[index_m]);
+
   // crossbreeding
   auto start_time = std::chrono::high_resolution_clock::now();
   std::vector<Equation> children = crossbreed();
@@ -99,13 +100,13 @@ void Population::create_one_generation(int wave) {
 //  mean_result = mean(fitness);
 //  selectMean(mean_result * 0.9);
 
-  // print stats
-  index_max = std::max_element(fitness.begin(), fitness.end());
-  index_m = std::distance(fitness.begin(), index_max);
-  std::cout << "max fitness after plague: " << fitness[index_m] << std::endl;
-  std::cout << "best local equation after plague: " << equations[index_m] << std::endl;
-  std::cout << "parents population size after plague: " << equations.size() << std::endl;
-  std::cout << "average population fitness after selection after plague: " << mean(fitness) << std::endl;
+//  // print stats
+//  index_max = std::max_element(fitness.begin(), fitness.end());
+//  index_m = std::distance(fitness.begin(), index_max);
+//  std::cout << "max fitness after plague: " << fitness[index_m] << std::endl;
+//  std::cout << "best local equation after plague: " << equations[index_m] << std::endl;
+//  std::cout << "parents population size after plague: " << equations.size() << std::endl;
+//  std::cout << "average population fitness after selection after plague: " << mean(fitness) << std::endl;
 
   // completes population
   if (populationSize - equations.size() < children.size()) {
