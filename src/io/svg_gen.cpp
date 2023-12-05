@@ -3,9 +3,9 @@
 #include "svg_gen.h"
 
 void make_svg(std::shared_ptr<Equation> &best_one,
-              std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data) {
+              std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, std::string name) {
   // Create an output file stream
-  std::ofstream svgFile("plot.svg");
+  std::ofstream svgFile("correlation_plot_" + name + ".svg");
 
   // Check if the file opened successfully
   if (!svgFile.is_open()) {
@@ -82,5 +82,5 @@ void make_svg(std::shared_ptr<Equation> &best_one,
     // Close the file stream
     svgFile.close();
 
-  std::cout << "SVG plot created successfully in 'plot.svg'." << std::endl;
+  std::cout << "SVG plot created successfully in correlation_plot_" + name + ".svg" << std::endl;
 }

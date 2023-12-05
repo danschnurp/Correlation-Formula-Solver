@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
       std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
     }
 
-    make_svg(population->bestOne, data);
+    make_svg(population->bestOne, data, options.dataPathACC.substr(options.dataPathACC.size() - 7, 3));
 
   }
         catch (std::exception & err)

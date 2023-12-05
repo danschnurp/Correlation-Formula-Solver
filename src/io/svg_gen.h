@@ -10,6 +10,6 @@
 #include "../preprocessing/utils.h"
 
 void make_svg(std::shared_ptr<Equation> &best_one,
-              std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data);
+              std::pair<std::shared_ptr<RecordACC>, std::shared_ptr<RecordHR>> &data, std::string name);
 
 #endif //PPR_SRC_IO_SVG_GEN_H_
