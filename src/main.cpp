@@ -168,7 +168,8 @@ int main(int argc, char **argv) {
                                                    options.maximumEquationInitLength);
 
     population->prepareForFitFunction(data.second->x, WORKGROUP_SIZE);
-
+    // todo dont ignore ( * ) before ( + - )
+    // todo simplifying the equations
     for (int epoch = 0; epoch < options.epochs; ++epoch) {
       population->create_one_generation(1.25 + 0.1 * (epoch % 20));
       std::cout << "epoch " << epoch << " done... " << std::endl << "##########################" << std::endl;
