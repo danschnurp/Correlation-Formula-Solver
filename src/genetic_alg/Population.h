@@ -37,13 +37,12 @@ class Population {
   std::vector<std::vector<float>> xyzVector;
 
   /**
-   * The function selects equations from a population based on their fitness being below or equal to a given mean result.
-   *
-   * @param mean_result The parameter `mean_result` represents the mean value used for selection in the population. It is
-   * used to compare the fitness values of equations in the population. If the fitness value of an equation is less than or
-   * equal to `mean_result`, the equation is considered for removal from the population.
-   *
-   * @return The function does not have a return type, so it does not return anything.
+   * The function selects equations from a population based on their fitness compared to a mean result, ensuring that the
+   * population does not go extinct.
+   * @param mean_result The parameter `mean_result` represents the mean fitness value of the population. It is used as a
+   * threshold for selecting equations in the population.
+   * @param difficulty The "difficulty" parameter represents the level of difficulty or challenge in the selection process.
+   * It is used to determine the threshold for selecting survivors based on their fitness compared to the mean result.
    */
   void selectMean(float mean_result, float difficulty);
 
@@ -124,7 +123,12 @@ class Population {
              float minimumEquationCoefficients, float maximumEquationCoefficients,
              float maximumEquationInitLength);
 
-  // todo
+  /**
+   * The function creates a new generation of equations by selecting the fittest equations from the
+   * current generation, crossbreeding them, and completing the population with randomly generated equations if necessary.
+   *
+   * @param wave parameter which makes selection more difficult
+   */
   void create_one_generation(float wave);
 
   friend std::ostream &operator<<(std::ostream &os, const Population &population);

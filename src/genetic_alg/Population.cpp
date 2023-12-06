@@ -106,18 +106,6 @@ void Population::create_one_generation(float wave) {
   auto start_time = std::chrono::high_resolution_clock::now();
   std::vector<Equation> children = crossbreed();
   std::cout << "children: " << children.size() << std::endl;
-//
-//  mean_result = mean(fitness);
-//  selectMean(mean_result * 0.9);
-
-//  // print stats
-//  index_max = std::max_element(fitness.begin(), fitness.end());
-//  index_m = std::distance(fitness.begin(), index_max);
-//  std::cout << "max fitness after plague: " << fitness[index_m] << std::endl;
-//  std::cout << "best local equation after plague: " << equations[index_m] << std::endl;
-//  std::cout << "parents population size after plague: " << equations.size() << std::endl;
-//  std::cout << "average population fitness after selection after plague: " << mean(fitness) << std::endl;
-
   // completes population
   if (populationSize - equations.size() < children.size()) {
     for (int j = 0; j < populationSize - equations.size(); ++j) {
