@@ -71,7 +71,8 @@ void Population::selectMean(float mean_result, float difficulty) {
 
   // selection based on mean like result
   for (int j = 0; j < equations.size(); ++j) {
-    if (fitness[j] <= (mean_result)) {
+    //                                    penalty for difficulty
+    if (fitness[j] <= (mean_result) || equations[j].nodes.size() > 15) {
       equations[j].root = std::numeric_limits<float>::max();
       fitness[j] = std::numeric_limits<float>::max();
     }
@@ -82,6 +83,13 @@ void Population::selectMean(float mean_result, float difficulty) {
 
 void Population::create_one_generation(float wave) {
   compute_fitness();
+
+  // erases negative correlation
+  for (int j = 0; j < equations_children.size(); ++j)
+    if (fitness_children[j] <= 0.0) equations_children[j].root = std::numeric_limits<float>::max();
+  std::erase_if(equations_children, [](Equation &i) { return i.root == std::numeric_limits<float>::max(); });
+  std::erase_if(fitness_children, [](auto &i) { return i <= 0.0; });
+
   std::copy(fitness_children.begin(), fitness_children.end(), std::back_inserter(fitness));
   std::copy(equations_children.begin(), equations_children.end(), std::back_inserter(equations));
   fitness_children.clear();
@@ -113,10 +121,12 @@ void Population::create_one_generation(float wave) {
     }
   } else {
     for (auto &item : children) equations_children.push_back(item);
-    for (int j = 0; j < populationSize - equations_children.size(); ++j) {
+    int newOnes;
+    for (newOnes = 0; newOnes < populationSize - equations_children.size(); ++newOnes) {
       equations_children.emplace_back(minimumEquationCoefficients, maximumEquationCoefficients,
                                       maximumEquationInitLength);
     }
+    std::cout << "immigrants: " << newOnes << std::endl;
   }
   print_time(start_time);
 }
@@ -200,13 +210,13 @@ float Population::countFitFunction(const std::vector<float> &x) {
     // Calculate covariance and variances
     float covXY = 0.0;
     float varX = 0.0;
-
+  // auto vectorization maybe
     for (size_t i = 0; i < x.size(); ++i) {
         covXY += (x[i] - meanX) * precomputedLabels[i];
         varX += std::pow(x[i] - meanX, 2);
     }
     // Calculate Pearson correlation coefficient
-    return std::abs(covXY / (std::sqrt(varX) * varLabels));
+  return covXY / (std::sqrt(varX) * varLabels);
 }
 
 void Population::prepareForFitFunction(const std::vector<float> &y, int WORKGROUP_SIZE) {

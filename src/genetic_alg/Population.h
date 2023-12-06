@@ -95,7 +95,7 @@ class Population {
   void compute_fitness();
 
  public:
-  int populationSize = 200;
+  int populationSize = 450;
   std::vector<float> fitness;
   std::vector<Equation> equations;
   std::vector<float> fitness_children;
