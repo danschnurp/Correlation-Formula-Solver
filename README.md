@@ -43,3 +43,4 @@ poznámky
 
 [diagram2.pdf](diagram2.pdf)
 
+![](Screenshot 2023-12-06 at 12.15.59.png)
