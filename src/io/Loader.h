@@ -9,6 +9,7 @@
 #include <sstream>
 #include <vector>
 #include <chrono>
+#include <memory>
 #include "RecordHR.h"
 #include "RecordACC.h"
 

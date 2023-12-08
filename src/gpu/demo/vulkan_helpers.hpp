@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <type_traits>
-
+#include <memory>
 
 
 #include <vulkan/vulkan.hpp>

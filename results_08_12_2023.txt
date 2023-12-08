@@ -1,0 +1,195 @@
+C:\Windows\system32\wsl.exe --distribution Ubuntu-22.04 --exec /bin/bash -c "cd /mnt/c/Users/dartix/CLionProjects/kiv-ppr/cmake-build-release && /mnt/c/Users/dartix/CLionProjects/kiv-ppr/cmake-build-release/ppr --data_path_hr ../data/HR_008.csv --data_path_acc ../data/ACC_008.csv"
+
+Your provided parameters and default ones:
+Data Path HR: ../data/HR_008.csv
+Data Path ACC: ../data/ACC_008.csv
+Use GPU: true
+Workgroup Size: 16
+shader ../plus.spv exists: true
+shader ../minus.spv exists: true
+shader ../multiply.spv exists: true
+minimum_equation_coefficients: 0.999
+maximum_equation_coefficients: 1.001
+maximum_equation_init_length: 4
+
+VULKAN correctness test:
+--------------------------------------
+Device Name: llvmpipe (LLVM 15.0.7, 256 bits)
+Device Type: 4
+API Version: 1.3.238
+Driver Version: 1
+Vendor ID: 65541
+Device ID: 0
+Geometry Shader Support: Yes
+Tessellation Shader Support: Yes
+--------------------------------------
+result OK
+
+starting...
+load sequentially: false
+loaded hr 666038
+loaded acc 666128
+Time taken: 0 min 23 sec
+
+starting preprocess...
+clean acc 666038
+clean hr 666038
+Time taken: 0 min 0 sec
+
+starting correlation compute...
+Time taken: 0 min 21 sec
+
+average population fitness before selection: 0.215693
+max fitness: 0.365885
+best local equation: equation: 1.00018 * (1.00096 X ) * (1.00007 X ) - (0.999812 Y ) + (0.999968 X )
+
+parents population size: 100
+average population fitness after selection: 0.328887
+started crossbreeding...
+children: 100
+immigrants: 175
+Time taken: 0 min 0 sec
+
+epoch 0 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 13 sec
+
+average population fitness before selection: 0.276935
+max fitness: 0.369499
+best local equation: equation: 1.0005 * (1.00078 X ) + (1.00028 X ) - (1.00027 Y )
+
+parents population size: 194
+average population fitness after selection: 0.335968
+started crossbreeding...
+children: 194
+immigrants: 128
+Time taken: 0 min 0 sec
+
+epoch 1 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 13 sec
+
+average population fitness before selection: 0.309923
+max fitness: 0.369499
+best local equation: equation: 1.0005 * (1.00078 X ) + (1.00028 X ) - (1.00027 Y )
+
+parents population size: 307
+average population fitness after selection: 0.344347
+started crossbreeding...
+children: 308
+Time taken: 0 min 0 sec
+
+epoch 2 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 5 sec
+
+average population fitness before selection: 0.337955
+max fitness: 0.369499
+best local equation: equation: 0.99941 + (1.0005 X ) - (0.999223 Y ) + (1.00028 X )
+
+parents population size: 306
+average population fitness after selection: 0.352487
+started crossbreeding...
+children: 306
+Time taken: 0 min 0 sec
+
+epoch 3 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 5 sec
+
+average population fitness before selection: 0.348628
+max fitness: 0.369549
+best local equation: equation: 0.999077 * (1.00078 X ) + (1.00028 X ) - (1.00008 Y ) + (1.00003 X ) + (1.00077 Z ) + (0.99938 X )
+
+parents population size: 308
+average population fitness after selection: 0.356028
+started crossbreeding...
+children: 308
+Time taken: 0 min 0 sec
+
+epoch 4 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 6 sec
+
+average population fitness before selection: 0.350711
+max fitness: 0.369935
+best local equation: equation: 1.00092 + (1.00076 X ) - (1.00038 Y ) + (0.999895 X ) + (1.00012 Z ) + (1.00063 X )
+
+parents population size: 367
+average population fitness after selection: 0.356807
+started crossbreeding...
+children: 368
+Time taken: 0 min 0 sec
+
+epoch 5 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 3 sec
+
+average population fitness before selection: 0.352652
+max fitness: 0.369947
+best local equation: equation: 1.00019 * (1.00078 Z ) + (0.999999 X ) - (1.00001 Y ) + (0.999745 X ) + (0.999968 X )
+
+parents population size: 206
+average population fitness after selection: 0.36183
+started crossbreeding...
+children: 206
+immigrants: 122
+Time taken: 0 min 0 sec
+
+epoch 6 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 15 sec
+
+average population fitness before selection: 0.332413
+max fitness: 0.37143
+best local equation: equation: 0.999831 + (0.999666 X ) + (0.999949 X ) - (1.00117 Y ) + (0.999745 X ) + (1.00028 X ) - (1.00008 Y ) + (1.00003 X ) + (1.00077 Z ) + (0.99938 X )
+
+parents population size: 392
+average population fitness after selection: 0.359736
+started crossbreeding...
+children: 392
+Time taken: 0 min 0 sec
+
+epoch 7 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 2 sec
+
+average population fitness before selection: 0.357464
+max fitness: 0.37143
+best local equation: equation: 0.999831 + (0.999666 X ) + (0.999949 X ) - (1.00117 Y ) + (0.999745 X ) + (1.00028 X ) - (1.00008 Y ) + (1.00003 X ) + (1.00077 Z ) + (0.99938 X )
+
+parents population size: 301
+average population fitness after selection: 0.363513
+started crossbreeding...
+children: 302
+Time taken: 0 min 0 sec
+
+epoch 8 done...
+##########################
+starting correlation compute...
+Time taken: 0 min 7 sec
+
+average population fitness before selection: 0.357877
+max fitness: 0.371494
+best local equation: equation: 1.00025 * (0.999407 X ) - (1.00008 Y ) + (0.999778 Z ) + (0.99926 X ) - (1.00075 Y ) + (0.999349 X ) + (0.999747 X )
+
+parents population size: 377
+average population fitness after selection: 0.363733
+started crossbreeding...
+children: 378
+Time taken: 0 min 0 sec
+
+epoch 9 done...
+##########################
+SVG plot created successfully in correlation_plot_008.svg
+done...
+
+Process finished with exit code 0
