@@ -1,0 +1,11 @@
+==37046==
+==37046== HEAP SUMMARY:
+==37046==     in use at exit: 286,460 bytes in 2,200 blocks
+==37046==   total heap usage: 742,717 allocs, 740,517 frees, 323,818,639 bytes allocated
+==37046==
+==37046== LEAK SUMMARY:
+==37046==    definitely lost: 0 bytes in 0 blocks
+==37046==    indirectly lost: 0 bytes in 0 blocks
+==37046==      possibly lost: 0 bytes in 0 blocks
+==37046==    still reachable: 286,460 bytes in 2,200 blocks
+==37046==         suppressed: 0 bytes in 0 blocks

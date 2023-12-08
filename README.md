@@ -19,7 +19,6 @@ VulkanSDK-1.2.182.1-Installer.exe --accept-licenses --default-answer --confirm-c
     sudo apt install vulkan-sdk
 ```
 
--
 - compile shaders
 
 ```
