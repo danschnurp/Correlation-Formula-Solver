@@ -28,10 +28,10 @@ struct Options {
 void printHelp() {
   std::cout << "Usage: ppr(.exe) --data_path_hr <path_HR> --data_path_acc <path_ACC> [--not_use_gpu "
                "--load_data_sequentially --gpu_workgroup_size <INTEGER>\n"
-               " --minimum_equation_coefficients <INTEGER> \n"
-               "--maximum_equation_coefficient <INTEGER> \n"
+               " --minimum_equation_coefficients <FLOAT> \n"
+               "--maximum_equation_coefficient <FLOAT> \n"
                "--epochs <INTEGER> \n"
-               "--maximum_equation_init_length ]\n";
+               "--maximum_equation_init_length <INTEGER> ]\n";
 }
 
 /**
