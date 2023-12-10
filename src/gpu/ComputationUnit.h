@@ -5,7 +5,7 @@
 #ifndef PPR_COMPUTATIONUNIT_H
 #define PPR_COMPUTATIONUNIT_H
 
-#include "demo/vulkan_helpers.hpp"
+#include "helpers/vulkan_helpers.hpp"
 
 class ComputationUnit {
     static constexpr auto NumDescriptors = uint32_t(2);
