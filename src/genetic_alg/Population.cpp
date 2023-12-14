@@ -190,32 +190,32 @@ std::vector<Equation> Population::crossbreed() {
               std::back_inserter(children[children.size() - 1].nodes));
 
   }
-    return children;
+  return children;
 }
 
 float mean(const std::vector<float> &data) {
-    float sum = 0.0;
-    for (const float &value : data) {
-        sum += value;
-    }
-    return sum / data.size();
+  float sum = 0.0;
+  for (const float &value : data) {
+    sum += value;
+  }
+  return sum / data.size();
 }
 
 float Population::countFitFunction(const std::vector<float> &x) {
-    if (x.size() != precomputedLabels.size()) {
-        throw std::invalid_argument("Input vectors must have the same size");
-    }
-    // Calculate means
-    float meanX = mean(x);
-    // Calculate covariance and variances
-    float covXY = 0.0;
-    float varX = 0.0;
-  // auto vectorization maybe
-    for (size_t i = 0; i < x.size(); ++i) {
-        covXY += (x[i] - meanX) * precomputedLabels[i];
-        varX += std::pow(x[i] - meanX, 2);
-    }
-    // Calculate Pearson correlation coefficient
+  if (x.size() != precomputedLabels.size()) {
+    throw std::invalid_argument("Input vectors must have the same size");
+  }
+  // Calculate means
+  float meanX = mean(x);
+  // Calculate covariance and variances
+  float covXY = 0.0;
+  float varX = 0.0;
+
+  for (size_t i = 0; i < x.size(); ++i) {
+    covXY += (x[i] - meanX) * precomputedLabels[i];
+    varX += std::pow(x[i] - meanX, 2);
+  }
+  // Calculate Pearson correlation coefficient
   return covXY / (std::sqrt(varX) * varLabels);
 }
 
@@ -230,9 +230,9 @@ void Population::prepareForFitFunction(const std::vector<float> &y, int WORKGROU
     precomputedLabels.emplace_back(item - meanLabels);
   }
   for (const auto &item : y) {
-        varLabels += (item - meanLabels) * (item - meanLabels);
-    }
-    varLabels = std::sqrt(varLabels);
+    varLabels += (item - meanLabels) * (item - meanLabels);
+  }
+  varLabels = std::sqrt(varLabels);
 }
 
 std::vector<float> Population::evaluateCPU(const std::vector<float> &x, const std::vector<float> &y,
@@ -265,6 +265,6 @@ std::vector<float> Population::evaluate(const Equation &equation) {
       fMultiply->compute(d_y, d_x, {width, height, i.value});
       d_y.to_host(out_tst);
     }
-    }
-    return out_tst;
+  }
+  return out_tst;
 }
